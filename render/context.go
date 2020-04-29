@@ -76,7 +76,7 @@ func (c rendererContext) EvaluateString(source string) (out interface{}, err err
 
 // Get gets a variable value within an evaluation context.
 func (c rendererContext) Get(name string) interface{} {
-	return c.ctx.bindings[name]
+	return c.ctx.config.GetVariable(c.ctx.bindings, name)
 }
 
 func (c rendererContext) ExpandTagArg() (string, error) {

@@ -3,6 +3,7 @@ package liquid
 import (
 	"io"
 
+	"github.com/osteele/liquid/expressions"
 	"github.com/osteele/liquid/filters"
 	"github.com/osteele/liquid/render"
 	"github.com/osteele/liquid/tags"
@@ -108,5 +109,31 @@ func (e *Engine) ParseAndRenderString(source string, b Bindings) (string, Source
 // stands for the corresponding default: objectLeft = {{, objectRight = }}, tagLeft = {% , tagRight = %}
 func (e *Engine) Delims(objectLeft, objectRight, tagLeft, tagRight string) *Engine {
 	e.cfg.Delims = []string{objectLeft, objectRight, tagLeft, tagRight}
+	return e
+}
+
+func (e *Engine) StrictVariables() *Engine {
+	return e.UndefinedVariablesMode(expressions.StrictMode{})
+}
+
+func (e *Engine) StrictFilters() *Engine {
+	return e.UndefinedFiltersMode(expressions.StrictMode{})
+}
+
+func (e *Engine) LaxVariables() *Engine {
+	return e.UndefinedVariablesMode(expressions.LaxMode{})
+}
+
+func (e *Engine) LaxFilters() *Engine {
+	return e.UndefinedFiltersMode(expressions.LaxMode{})
+}
+
+func (e *Engine) UndefinedVariablesMode(handler expressions.UndefinedVariableHandler) *Engine {
+	e.cfg.VariableErrorMode = handler
+	return e
+}
+
+func (e *Engine) UndefinedFiltersMode(handler expressions.UndefinedFilterHandler) *Engine {
+	e.cfg.FilterErrorMode = handler
 	return e
 }
