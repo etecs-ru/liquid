@@ -10,6 +10,7 @@ import (
 
 	yaml "gopkg.in/yaml.v2"
 
+	"github.com/osteele/liquid/expressions"
 	"github.com/osteele/liquid/parser"
 	"github.com/osteele/liquid/render"
 	"github.com/stretchr/testify/require"
@@ -34,9 +35,9 @@ var iterationTests = []struct{ in, expected string }{
 	{`{% for a in array offset: 3 %}{{ a }}.{% endfor %}`, ""},
 	{`{% for a in array offset: 10 %}{{ a }}.{% endfor %}`, ""},
 	// TODO investigate how these combine; does it depend on the order?
-	// {`{% for a in array reversed offset:1 %}{{ a }}.{% endfor %}`, "second.first."},
-	// {`{% for a in array limit:1 offset:1 %}{{ a }}.{% endfor %}`, "second."},
-	// {`{% for a in array reversed limit:1 offset:1 %}{{ a }}.{% endfor %}`, "second."},
+	{`{% for a in array reversed offset:1 %}{{ a }}.{% endfor %}`, "second.first."},
+	{`{% for a in array limit:1 offset:1 %}{{ a }}.{% endfor %}`, "second."},
+	{`{% for a in array reversed limit:1 offset:1 %}{{ a }}.{% endfor %}`, "second."},
 
 	// loop variables
 	{`{% for a in array %}{{ forloop.first }}.{% endfor %}`, "true.false.false."},
@@ -74,7 +75,8 @@ var iterationTests = []struct{ in, expected string }{
 	// cycle
 	{`{% for a in array %}{% cycle 'even', 'odd' %}.{% endfor %}`, "even.odd.even."},
 	{`{% for a in array %}{% cycle '0', '1' %},{% cycle '0', '1' %}.{% endfor %}`, "0,1.0,1.0,1."},
-	// {`{% for a in array %}{% cycle group: 'a', '0', '1' %},{% cycle '0', '1' %}.{% endfor %}`, "0,1.0,1.0,1."},
+	{`{% for a in array %}{% cycle 'hello': 'a', '0', '1' %},{% cycle '0', '1' %}.{% endfor %}`, "a,0.0,1.1,0."},
+	{`{% for a in array %}{% cycle 'first': 'one', 'two' %},{% cycle 'second': 'one', 'two' %}.{% endfor %}`, "one,one.two,two.one,one."},
 
 	// range
 	{`{% for i in (3 .. 5) %}{{i}}.{% endfor %}`, "3.4.5."},
@@ -120,9 +122,7 @@ var iterationTestBindings = map[string]interface{}{
 	},
 }
 
-func TestIterationTags(t *testing.T) {
-	config := render.NewConfig()
-	AddStandardTags(config)
+func testIterationTags(config render.Config, t *testing.T) {
 	for i, test := range iterationTests {
 		t.Run(fmt.Sprintf("%02d", i+1), func(t *testing.T) {
 			root, err := config.Compile(test.in, parser.SourceLoc{})
@@ -139,6 +139,18 @@ func TestIterationTags(t *testing.T) {
 			require.Equalf(t, test.expected, actual, test.in)
 		})
 	}
+}
+
+func TestIterationTags(t *testing.T) {
+	config := render.NewConfig()
+	AddStandardTags(config)
+	t.Run("laxVariables", func(t *testing.T) {
+		testIterationTags(config, t)
+	})
+	config.VariableErrorMode = expressions.StrictMode{}
+	t.Run("strictVariables", func(t *testing.T) {
+		testIterationTags(config, t)
+	})
 }
 
 func TestIterationTags_errors(t *testing.T) {

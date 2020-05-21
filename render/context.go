@@ -13,6 +13,8 @@ import (
 type Context interface {
 	// Get retrieves the value of a variable from the current lexical environment.
 	Get(name string) interface{}
+	// GetDirect retrieves the value of a variable from the current lexical environment (ignoring lax/strict settings).
+	GetDirect(name string) interface{}
 	// Errorf creates a SourceError, that includes the source location.
 	// Use this to distinguish errors in the template from implementation errors
 	// in the template engine.
@@ -77,6 +79,11 @@ func (c rendererContext) EvaluateString(source string) (out interface{}, err err
 // Get gets a variable value within an evaluation context.
 func (c rendererContext) Get(name string) interface{} {
 	return c.ctx.config.GetVariable(c.ctx.bindings, name)
+}
+
+// Get the value within an evaluation context directly (ignoring lax/strict settings).
+func (c rendererContext) GetDirect(name string) interface{} {
+	return c.ctx.bindings[name]
 }
 
 func (c rendererContext) ExpandTagArg() (string, error) {
