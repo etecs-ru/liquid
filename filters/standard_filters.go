@@ -34,6 +34,12 @@ func AddStandardFilters(fd FilterDictionary) { // nolint: gocyclo
 	})
 
 	// array filters
+	fd.AddFilter("concat", func(a, b []interface{}) []interface{} {
+		result := make([]interface{}, len(a)+len(b))
+		copy(result, a)
+		return append(result, b...)
+	})
+
 	fd.AddFilter("compact", func(a []interface{}) (result []interface{}) {
 		for _, item := range a {
 			if item != nil {
@@ -74,33 +80,61 @@ func AddStandardFilters(fd FilterDictionary) { // nolint: gocyclo
 	})
 
 	// number filters
-	fd.AddFilter("abs", math.Abs)
-	fd.AddFilter("ceil", math.Ceil)
-	fd.AddFilter("floor", math.Floor)
-	fd.AddFilter("modulo", math.Mod)
-	fd.AddFilter("minus", func(a, b float64) float64 {
-		return a - b
+	fd.AddFilter("abs", stdUnaryMathOperation(math.Abs).Call)
+	fd.AddFilter("ceil", func(a values.Number) int64 {
+		return int64(math.Ceil(a.AsFloat64()))
 	})
-	fd.AddFilter("plus", func(a, b float64) float64 {
-		return a + b
+	fd.AddFilter("floor", func(a values.Number) int64 {
+		return int64(math.Floor(a.AsFloat64()))
 	})
-	fd.AddFilter("times", func(a, b float64) float64 {
-		return a * b
-	})
-	fd.AddFilter("divided_by", func(a float64, b interface{}) interface{} {
-		switch q := b.(type) {
-		case int, int16, int32, int64:
-			return int(a) / q.(int)
-		case float32, float64:
-			return a / b.(float64)
-		default:
-			return nil
+	fd.AddFilter("at_least", atLeast)
+	fd.AddFilter("at_most", atMost)
+	fd.AddFilter("modulo", stdBinaryMathOperation(math.Mod).Call)
+	fd.AddFilter("minus", commonNumberOperation{
+		Int64: func(a, b int64) int64 {
+			return a - b
+		},
+		Float64: func(a, b float64) float64 {
+			return a - b
+		},
+	}.Call)
+	fd.AddFilter("plus", commonNumberOperation{
+		Int64: func(a, b int64) int64 {
+			return a + b
+		},
+		Float64: func(a, b float64) float64 {
+			return a + b
+		},
+	}.Call)
+	fd.AddFilter("times", commonNumberOperation{
+		Int64: func(a, b int64) int64 {
+			return a * b
+		},
+		Float64: func(a, b float64) float64 {
+			return a * b
+		},
+	}.Call)
+	fd.AddFilter("divided_by", func(a float64, b values.Number) (interface{}, error) {
+		if b.IsFloat {
+			return a / b.AsFloat64(), nil
+		} else {
+			i := b.AsInt64()
+			if i == 0 {
+				return nil, fmt.Errorf("divided by 0")
+			}
+			return int64(a) / i, nil
 		}
 	})
-	fd.AddFilter("round", func(n float64, places func(int) int) float64 {
+	fd.AddFilter("round", func(n values.Number, places func(int) int) interface{} {
 		pl := places(0)
 		exp := math.Pow10(pl)
-		return math.Floor(n*exp+0.5) / exp
+		result := math.Floor(n.AsFloat64()*exp+0.5) / exp
+
+		if n.IsFloat && pl > 0 {
+			return result
+		} else {
+			return int64(result)
+		}
 	})
 
 	// sequence filters
@@ -110,17 +144,15 @@ func AddStandardFilters(fd FilterDictionary) { // nolint: gocyclo
 	fd.AddFilter("append", func(s, suffix string) string {
 		return s + suffix
 	})
-	fd.AddFilter("capitalize", func(s, suffix string) string {
+	fd.AddFilter("capitalize", func(s string) string {
 		if len(s) == 0 {
 			return s
 		}
 		return strings.ToUpper(s[:1]) + s[1:]
 	})
-	fd.AddFilter("downcase", func(s, suffix string) string {
-		return strings.ToLower(s)
-	})
+	fd.AddFilter("downcase", strings.ToLower)
 	fd.AddFilter("escape", html.EscapeString)
-	fd.AddFilter("escape_once", func(s, suffix string) string {
+	fd.AddFilter("escape_once", func(s string) string {
 		return html.EscapeString(html.UnescapeString(s))
 	})
 	fd.AddFilter("newline_to_br", func(s string) string {
@@ -183,9 +215,7 @@ func AddStandardFilters(fd FilterDictionary) { // nolint: gocyclo
 		}
 		return m + el
 	})
-	fd.AddFilter("upcase", func(s, suffix string) string {
-		return strings.ToUpper(s)
-	})
+	fd.AddFilter("upcase", strings.ToUpper)
 	fd.AddFilter("url_encode", url.QueryEscape)
 	fd.AddFilter("url_decode", url.QueryUnescape)
 
@@ -268,4 +298,105 @@ func eqItems(a, b interface{}) bool {
 		return a == b
 	}
 	return reflect.DeepEqual(a, b)
+}
+
+type commonNumberOperation struct {
+	Int64   func(int64, int64) int64
+	Float64 func(float64, float64) float64
+}
+
+func (op commonNumberOperation) Call(lhs, rhs values.Number) interface{} {
+	if lhs.IsFloat || rhs.IsFloat {
+		return op.Float64(lhs.AsFloat64(), rhs.AsFloat64())
+	} else {
+		return op.Int64(lhs.AsInt64(), rhs.AsInt64())
+	}
+}
+
+type stdUnaryMathOperation func(float64) float64
+
+func (op stdUnaryMathOperation) Call(num values.Number) interface{} {
+	result := op(num.AsFloat64())
+	if num.IsFloat {
+		return result
+	} else {
+		return int64(result)
+	}
+}
+
+type stdBinaryMathOperation func(float64, float64) float64
+
+func (op stdBinaryMathOperation) Call(lhs, rhs values.Number) interface{} {
+	result := op(lhs.AsFloat64(), rhs.AsFloat64())
+	if lhs.IsFloat || rhs.IsFloat {
+		return result
+	} else {
+		return int64(result)
+	}
+}
+
+// equivalent to math.Max
+func atLeast(num, comp values.Number) interface{} {
+	// both integers
+	if !num.IsFloat && !comp.IsFloat {
+		if num.AsInt64() > comp.AsInt64() {
+			return num.Value
+		} else {
+			return comp.Value
+		}
+	}
+
+	fNum := num.AsFloat64()
+	fComp := comp.AsFloat64()
+
+	// special cases (from math.Max)
+	switch {
+	case math.IsInf(fNum, 1) || math.IsInf(fComp, 1):
+		return math.Inf(1)
+	case math.IsNaN(fNum) || math.IsNaN(fComp):
+		return math.NaN()
+	case fNum == 0 && fNum == fComp:
+		if math.Signbit(fNum) {
+			return comp.Value
+		}
+		return num.Value
+	}
+
+	if fNum > fComp {
+		return num.Value
+	}
+	return comp.Value
+}
+
+// equivalent to math.Min
+func atMost(num, comp values.Number) interface{} {
+	// both integers
+	if !num.IsFloat && !comp.IsFloat {
+		if num.AsInt64() < comp.AsInt64() {
+			return num.Value
+		} else {
+			return comp.Value
+		}
+	}
+
+	fNum := num.AsFloat64()
+	fComp := comp.AsFloat64()
+
+	// special cases (from math.Min)
+	switch {
+	case math.IsInf(fNum, -1) || math.IsInf(fComp, -1):
+		return math.Inf(-1)
+	case math.IsNaN(fNum) || math.IsNaN(fComp):
+		return math.NaN()
+	case fNum == 0 && fNum == fComp:
+		if math.Signbit(fNum) {
+			return num.Value
+		}
+		return comp.Value
+	}
+
+	if fNum < fComp {
+		return num.Value
+	}
+	return comp.Value
 }

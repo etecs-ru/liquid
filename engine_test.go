@@ -17,11 +17,16 @@ var liquidTests = []struct{ in, expected string }{
 	{`{{ page.title }}`, "Introduction"},
 	{`{% if x %}true{% endif %}`, "true"},
 	{`{{ "upper" | upcase }}`, "UPPER"},
+	{`{{ array | upcase }}`, "FIRSTSECONDTHIRD"},
+	{`{{ interface_array | upcase }}`, "FIRSTSECONDTHIRD"},
+	{`{{ empty_array | upcase }}`, ""},
 }
 
 var testBindings = map[string]interface{}{
-	"x":  123,
-	"ar": []string{"first", "second", "third"},
+	"x":               123,
+	"array":           []string{"first", "second", "third"},
+	"interface_array": []interface{}{"first", "second", "third"},
+	"empty_array":     []interface{}{},
 	"page": map[string]interface{}{
 		"title": "Introduction",
 	},

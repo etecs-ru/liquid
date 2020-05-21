@@ -42,12 +42,18 @@ var filterTests = []struct {
 	{`fruits | last`, "plums"},
 	{`empty_array | first`, nil},
 	{`empty_array | last`, nil},
-	{`empty_array | last`, nil},
+	//{`empty_array | uniq: 'a'`, []interface{}(nil)}, // TODO uniq with property is not supported
+	//{`empty_array | compact: 'a'`, []interface{}(nil)}, // TODO compact with property is not supported
+	{`empty_array | sort: 'a'`, []interface{}{}},
 	{`dup_ints | uniq | join`, "1 2 3"},
 	{`dup_strings | uniq | join`, "one two three"},
 	{`dup_maps | uniq | map: "name" | join`, "m1 m2 m3"},
 	{`mixed_case_array | sort_natural | join`, "a B c"},
 	{`mixed_case_hash_values | sort_natural: 'key' | map: 'key' | join`, "a B c"},
+
+	{`dup_ints | concat: dup_strings | join`, "1 2 1 3 one two one three"},
+	{`dup_ints | concat: empty_array | join`, "1 2 1 3"},
+	{`empty_array | concat: empty_array | join`, ""},
 
 	{`map_slice_has_nil | compact | join`, `a b`},
 	{`map_slice_2 | first`, `b`},
@@ -143,43 +149,67 @@ var filterTests = []struct {
 	{`"Tetsuro Takara" | url_encode`, "Tetsuro+Takara"},
 
 	// number filters
-	{`-17 | abs`, 17},
-	{`4 | abs`, 4},
+	{`-17 | abs`, int64(17)},
+	{`4 | abs`, int64(4)},
 	{`"-19.86" | abs`, 19.86},
 
-	{`1.2 | ceil`, 2},
-	{`2.0 | ceil`, 2},
-	{`183.357 | ceil`, 184},
-	{`"3.5" | ceil`, 4},
+	{`1.2 | ceil`, int64(2)},
+	{`2.0 | ceil`, int64(2)},
+	{`183.357 | ceil`, int64(184)},
+	{`"183.357" | ceil`, int64(184)},
+	{`"3.5" | ceil`, int64(4)},
 
-	{`1.2 | floor`, 1},
-	{`2.0 | floor`, 2},
-	{`183.357 | floor`, 183},
+	{`1.2 | floor`, int64(1)},
+	{`2.0 | floor`, int64(2)},
+	{`2.0 | floor`, int64(2)},
+	{`183.357 | floor`, int64(183)},
+	{`183.357 | floor`, int64(183)},
 
-	{`4 | plus: 2`, 6},
-	{`183.357 | plus: 12`, 195.357},
+	{`4 | plus: 2`, int64(6)},
+	{`"4" | plus: 2`, int64(6)},
+	{`"183.357" | plus: "12"`, 195.357},
 
-	{`4 | minus: 2`, 2},
-	{`16 | minus: 4`, 12},
+	{`4 | minus: 2`, int64(2)},
+	{`16 | minus: 4`, int64(12)},
+	{`"16" | minus: 4`, int64(12)},
 	{`183.357 | minus: 12`, 171.357},
+	{`"183.357" | minus: 12`, 171.357},
 
-	{`3 | times: 2`, 6},
-	{`24 | times: 7`, 168},
+	{`3 | times: 2`, int64(6)},
+	{`24 | times: 7`, int64(168)},
+	{`"24" | times: 7`, int64(168)},
 	{`183.357 | times: 12`, 2200.284},
+	{`"183.357" | times: 12`, 2200.284},
 
-	{`3 | modulo: 2`, 1},
-	{`24 | modulo: 7`, 3},
-	// {`183.357 | modulo: 12 | `, 3.357}, // TODO test suit use inexact
+	{`3 | modulo: 2`, int64(1)},
+	{`24 | modulo: 7`, int64(3)},
+	{`"24" | modulo: 7`, int64(3)},
+	//{`183.357 | modulo: 12`, 3.357}, // TODO test suite use inexact
+	//{`"183.357" | modulo: 12`, 3.357}, // TODO test suite use inexact
 
-	{`16 | divided_by: 4`, 4},
-	{`5 | divided_by: 3`, 1},
-	{`20 | divided_by: 7`, 2},
+	{`16 | divided_by: 4`, int64(4)},
+	{`5 | divided_by: 3`, int64(1)},
+	{`20 | divided_by: 7`, int64(2)},
+	{`"20" | divided_by: 7`, int64(2)},
 	{`20 | divided_by: 7.0`, 2.857142857142857},
-	{`20 | divided_by: 's'`, nil},
+	{`"20" | divided_by: 7.0`, 2.857142857142857},
+	//{`20 | divided_by: 's'`, nil}, // TODO test for error
 
-	{`1.2 | round`, 1},
-	{`2.7 | round`, 3},
+	{`1.2 | round`, int64(1)},
+	{`2.7 | round`, int64(3)},
+	{`"2.7" | round`, int64(3)},
 	{`183.357 | round: 2`, 183.36},
+	{`"183.357" | round: 2`, 183.36},
+
+	{`4 | at_least: 5`, int64(5)},
+	{`4 | at_least: 3`, int64(4)},
+	{`3.14 | at_least: 2`, 3.14},
+	{`3.14 | at_least: 5`, int64(5)},
+
+	{`4 | at_most: 5`, int64(4)},
+	{`4 | at_most: 3`, int64(3)},
+	{`3.14 | at_most: 2`, int64(2)},
+	{`3.14 | at_most: 5`, 3.14},
 
 	// Jekyll extensions; added here for convenient testing
 	// TODO add this just to the test environment
@@ -256,16 +286,7 @@ func TestFilters(t *testing.T) {
 		t.Run(fmt.Sprintf("%02d", i+1), func(t *testing.T) {
 			actual, err := expressions.EvaluateString(test.in, context)
 			require.NoErrorf(t, err, test.in)
-			expected := test.expected
-			switch v := actual.(type) {
-			case int:
-				actual = float64(v)
-			}
-			switch ex := expected.(type) {
-			case int:
-				expected = float64(ex)
-			}
-			require.Equalf(t, expected, actual, test.in)
+			require.Equalf(t, test.expected, actual, test.in)
 		})
 	}
 }
