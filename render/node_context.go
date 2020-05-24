@@ -10,18 +10,19 @@ import (
 // have a clean name that doesn't stutter.
 type nodeContext struct {
 	bindings map[string]interface{}
+	state    map[string]interface{}
 	config   Config
 }
 
 // newNodeContext creates a new evaluation context.
-func newNodeContext(scope map[string]interface{}, c Config) nodeContext {
+func newNodeContext(scope map[string]interface{}, state map[string]interface{}, c Config) nodeContext {
 	// The assign tag modifies the scope, so make a copy first.
 	// TODO this isn't really the right place for this.
 	vars := map[string]interface{}{}
 	for k, v := range scope {
 		vars[k] = v
 	}
-	return nodeContext{vars, c}
+	return nodeContext{vars, state, c}
 }
 
 // Evaluate evaluates an expression within the template context.

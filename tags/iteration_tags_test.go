@@ -128,7 +128,7 @@ func testIterationTags(config render.Config, t *testing.T) {
 			root, err := config.Compile(test.in, parser.SourceLoc{})
 			require.NoErrorf(t, err, test.in)
 			buf := new(bytes.Buffer)
-			err = render.Render(root, buf, iterationTestBindings, config)
+			err = render.Render(root, buf, iterationTestBindings, map[string]interface{}{}, config)
 			require.NoErrorf(t, err, test.in)
 			actual := buf.String()
 			if strings.Contains(test.in, "{% tablerow") {
@@ -169,7 +169,7 @@ func TestIterationTags_errors(t *testing.T) {
 		t.Run(fmt.Sprintf("%02d", i+1+len(iterationSyntaxErrorTests)), func(t *testing.T) {
 			root, err := cfg.Compile(test.in, parser.SourceLoc{})
 			require.NoErrorf(t, err, test.in)
-			err = render.Render(root, ioutil.Discard, iterationTestBindings, cfg)
+			err = render.Render(root, ioutil.Discard, iterationTestBindings, map[string]interface{}{}, cfg)
 			require.Errorf(t, err, test.in)
 			require.Containsf(t, err.Error(), test.expected, test.in)
 		})

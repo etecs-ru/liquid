@@ -94,7 +94,7 @@ func TestRender(t *testing.T) {
 			root, err := cfg.Compile(test.in, parser.SourceLoc{})
 			require.NoErrorf(t, err, test.in)
 			buf := new(bytes.Buffer)
-			err = Render(root, buf, renderTestBindings, cfg)
+			err = Render(root, buf, renderTestBindings, map[string]interface{}{}, cfg)
 			require.NoErrorf(t, err, test.in)
 			require.Equalf(t, test.out, buf.String(), test.in)
 		})
@@ -108,7 +108,7 @@ func TestRenderErrors(t *testing.T) {
 		t.Run(fmt.Sprintf("%02d", i+1), func(t *testing.T) {
 			root, err := cfg.Compile(test.in, parser.SourceLoc{})
 			require.NoErrorf(t, err, test.in)
-			err = Render(root, ioutil.Discard, renderTestBindings, cfg)
+			err = Render(root, ioutil.Discard, renderTestBindings, map[string]interface{}{}, cfg)
 			require.Errorf(t, err, test.in)
 			require.Containsf(t, err.Error(), test.out, test.in)
 		})

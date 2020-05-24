@@ -86,7 +86,7 @@ func TestStandardTags(t *testing.T) {
 			root, err := config.Compile(test.in, parser.SourceLoc{})
 			require.NoErrorf(t, err, test.in)
 			buf := new(bytes.Buffer)
-			err = render.Render(root, buf, tagTestBindings, config)
+			err = render.Render(root, buf, tagTestBindings, map[string]interface{}{}, config)
 			require.NoErrorf(t, err, test.in)
 			require.Equalf(t, test.expected, buf.String(), test.in)
 		})
@@ -100,7 +100,7 @@ func TestStandardTags_render_errors(t *testing.T) {
 		t.Run(fmt.Sprintf("%02d", i+1), func(t *testing.T) {
 			root, err := config.Compile(test.in, parser.SourceLoc{})
 			require.NoErrorf(t, err, test.in)
-			err = render.Render(root, ioutil.Discard, tagTestBindings, config)
+			err = render.Render(root, ioutil.Discard, tagTestBindings, map[string]interface{}{}, config)
 			require.Errorf(t, err, test.in)
 			require.Containsf(t, err.Error(), test.expected, test.in)
 		})

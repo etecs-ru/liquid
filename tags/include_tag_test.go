@@ -26,7 +26,7 @@ func TestIncludeTag(t *testing.T) {
 	root, err := config.Compile(`{% include "include_target.html" %}`, loc)
 	require.NoError(t, err)
 	buf := new(bytes.Buffer)
-	err = render.Render(root, buf, includeTestBindings, config)
+	err = render.Render(root, buf, includeTestBindings, map[string]interface{}{}, config)
 	require.NoError(t, err)
 	require.Equal(t, "include target", strings.TrimSpace(buf.String()))
 
@@ -34,14 +34,14 @@ func TestIncludeTag(t *testing.T) {
 	root, err = config.Compile(`{% include "include_target_2.html" %}`, loc)
 	require.NoError(t, err)
 	buf = new(bytes.Buffer)
-	err = render.Render(root, buf, includeTestBindings, config)
+	err = render.Render(root, buf, includeTestBindings, map[string]interface{}{}, config)
 	require.NoError(t, err)
 	require.Equal(t, "value", strings.TrimSpace(buf.String()))
 
 	// errors
 	root, err = config.Compile(`{% include 10 %}`, loc)
 	require.NoError(t, err)
-	err = render.Render(root, ioutil.Discard, includeTestBindings, config)
+	err = render.Render(root, ioutil.Discard, includeTestBindings, map[string]interface{}{}, config)
 	require.Error(t, err)
 	require.Contains(t, err.Error(), "requires a string")
 }
@@ -54,7 +54,7 @@ func TestIncludeTag_file_not_found_error(t *testing.T) {
 	// See the comment in TestIncludeTag_file_not_found_error.
 	root, err := config.Compile(`{% include "missing_file.html" %}`, loc)
 	require.NoError(t, err)
-	err = render.Render(root, ioutil.Discard, includeTestBindings, config)
+	err = render.Render(root, ioutil.Discard, includeTestBindings, map[string]interface{}{}, config)
 	require.Error(t, err)
 	require.True(t, os.IsNotExist(err.Cause()))
 }

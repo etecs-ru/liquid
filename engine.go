@@ -88,16 +88,24 @@ func (e *Engine) ParseTemplateLocation(source []byte, path string, line int) (*T
 
 // ParseAndRender parses and then renders the template.
 func (e *Engine) ParseAndRender(source []byte, b Bindings) ([]byte, SourceError) {
+	return e.ParseAndRenderWithState(source, b, map[string]interface{}{})
+}
+
+func (e *Engine) ParseAndRenderWithState(source []byte, b Bindings, state Bindings) ([]byte, SourceError) {
 	tpl, err := e.ParseTemplate(source)
 	if err != nil {
 		return nil, err
 	}
-	return tpl.Render(b)
+	return tpl.RenderWithState(b, state)
 }
 
 // ParseAndRenderString is a convenience wrapper for ParseAndRender, that takes string input and returns a string.
 func (e *Engine) ParseAndRenderString(source string, b Bindings) (string, SourceError) {
-	bs, err := e.ParseAndRender([]byte(source), b)
+	return e.ParseAndRenderStringWithState(source, b, map[string]interface{}{})
+}
+
+func (e *Engine) ParseAndRenderStringWithState(source string, b Bindings, state Bindings) (string, SourceError) {
+	bs, err := e.ParseAndRenderWithState([]byte(source), b, state)
 	if err != nil {
 		return "", err
 	}
