@@ -52,8 +52,10 @@ type Context interface {
 	TagName() string
 	// WrapError creates a new error that records the source location from the current context.
 	WrapError(err error) Error
-	//
+	// State gets the full state of the renderer.
 	State() map[string]interface{}
+	// GetState returns a named portion of the state and initializes it using a default function if not found
+	GetState(key string, defaulter func() interface{}) interface{}
 }
 
 type rendererContext struct {
@@ -89,12 +91,18 @@ func (c rendererContext) GetDirect(name string) interface{} {
 	return c.ctx.bindings[name]
 }
 
-func (c rendererContext) SetState(key string, value interface{}) {
-	c.ctx.state[key] = value
-}
-
 func (c rendererContext) State() map[string]interface{} {
 	return c.ctx.state
+}
+
+func (c rendererContext) GetState(key string, defaulter func() interface{}) interface{} {
+	if state, ok := c.ctx.state[key]; ok {
+		return state
+	} else {
+		state = defaulter()
+		c.ctx.state[key] = state
+		return state
+	}
 }
 
 func (c rendererContext) sourceLoc() parser.SourceLoc {
