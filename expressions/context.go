@@ -32,7 +32,7 @@ func (c *context) Clone() Context {
 
 // Get looks up a variable value in the expression context.
 func (c *context) Get(name string) interface{} {
-	return values.ToLiquid(c.bindings[name])
+	return values.ToLiquid(c.GetVariable(c.bindings, name))
 }
 
 // Set sets a variable value in the expression context.

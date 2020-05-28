@@ -44,7 +44,7 @@ func cycleTag(args string) (func(io.Writer, render.Context) error, error) {
 	}
 	cycle := stmt.Cycle
 	return func(w io.Writer, ctx render.Context) error {
-		loopVar := ctx.Get(forloopVarName)
+		loopVar := ctx.GetDirect(forloopVarName)
 		if loopVar == nil {
 			return ctx.Errorf("cycle must be within a forloop")
 		}
@@ -90,7 +90,7 @@ func (loop loopRenderer) render(w io.Writer, ctx render.Context) error {
 	defer func(index, forloop interface{}) {
 		ctx.Set(forloopVarName, index)
 		ctx.Set(loop.Variable, forloop)
-	}(ctx.Get(forloopVarName), ctx.Get(loop.Variable))
+	}(ctx.GetDirect(forloopVarName), ctx.GetDirect(loop.Variable))
 	cycleMap := map[string]int{}
 loop:
 	for i, len := 0, iter.Len(); i < len; i++ {

@@ -11,5 +11,8 @@ type Config struct {
 
 // NewConfig creates a parser Config.
 func NewConfig(g Grammar) Config {
-	return Config{Grammar: g}
+	return Config{
+		Config:  expressions.NewConfig(),
+		Grammar: g,
+	}
 }

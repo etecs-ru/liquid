@@ -3,6 +3,7 @@ package liquid
 import (
 	"io"
 
+	"github.com/osteele/liquid/expressions"
 	"github.com/osteele/liquid/filters"
 	"github.com/osteele/liquid/render"
 	"github.com/osteele/liquid/tags"
@@ -87,16 +88,24 @@ func (e *Engine) ParseTemplateLocation(source []byte, path string, line int) (*T
 
 // ParseAndRender parses and then renders the template.
 func (e *Engine) ParseAndRender(source []byte, b Bindings) ([]byte, SourceError) {
+	return e.ParseAndRenderWithState(source, b, map[string]interface{}{})
+}
+
+func (e *Engine) ParseAndRenderWithState(source []byte, b Bindings, state Bindings) ([]byte, SourceError) {
 	tpl, err := e.ParseTemplate(source)
 	if err != nil {
 		return nil, err
 	}
-	return tpl.Render(b)
+	return tpl.RenderWithState(b, state)
 }
 
 // ParseAndRenderString is a convenience wrapper for ParseAndRender, that takes string input and returns a string.
 func (e *Engine) ParseAndRenderString(source string, b Bindings) (string, SourceError) {
-	bs, err := e.ParseAndRender([]byte(source), b)
+	return e.ParseAndRenderStringWithState(source, b, map[string]interface{}{})
+}
+
+func (e *Engine) ParseAndRenderStringWithState(source string, b Bindings, state Bindings) (string, SourceError) {
+	bs, err := e.ParseAndRenderWithState([]byte(source), b, state)
 	if err != nil {
 		return "", err
 	}
@@ -108,5 +117,31 @@ func (e *Engine) ParseAndRenderString(source string, b Bindings) (string, Source
 // stands for the corresponding default: objectLeft = {{, objectRight = }}, tagLeft = {% , tagRight = %}
 func (e *Engine) Delims(objectLeft, objectRight, tagLeft, tagRight string) *Engine {
 	e.cfg.Delims = []string{objectLeft, objectRight, tagLeft, tagRight}
+	return e
+}
+
+func (e *Engine) StrictVariables() *Engine {
+	return e.UndefinedVariablesMode(expressions.StrictMode{})
+}
+
+func (e *Engine) StrictFilters() *Engine {
+	return e.UndefinedFiltersMode(expressions.StrictMode{})
+}
+
+func (e *Engine) LaxVariables() *Engine {
+	return e.UndefinedVariablesMode(expressions.LaxMode{})
+}
+
+func (e *Engine) LaxFilters() *Engine {
+	return e.UndefinedFiltersMode(expressions.LaxMode{})
+}
+
+func (e *Engine) UndefinedVariablesMode(handler expressions.UndefinedVariableHandler) *Engine {
+	e.cfg.VariableErrorMode = handler
+	return e
+}
+
+func (e *Engine) UndefinedFiltersMode(handler expressions.UndefinedFilterHandler) *Engine {
+	e.cfg.FilterErrorMode = handler
 	return e
 }

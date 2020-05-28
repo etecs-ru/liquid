@@ -7,12 +7,15 @@ import (
 	"strings"
 
 	"github.com/osteele/liquid/expressions"
+	"github.com/osteele/liquid/parser"
 )
 
 // Context provides the rendering context for a tag renderer.
 type Context interface {
 	// Get retrieves the value of a variable from the current lexical environment.
 	Get(name string) interface{}
+	// GetDirect retrieves the value of a variable from the current lexical environment (ignoring lax/strict settings).
+	GetDirect(name string) interface{}
 	// Errorf creates a SourceError, that includes the source location.
 	// Use this to distinguish errors in the template from implementation errors
 	// in the template engine.
@@ -49,6 +52,10 @@ type Context interface {
 	TagName() string
 	// WrapError creates a new error that records the source location from the current context.
 	WrapError(err error) Error
+	// State gets the full state of the renderer.
+	State() map[string]interface{}
+	// GetState returns a named portion of the state and initializes it using a default function if not found
+	GetState(key string, defaulter func() interface{}) interface{}
 }
 
 type rendererContext struct {
@@ -76,18 +83,47 @@ func (c rendererContext) EvaluateString(source string) (out interface{}, err err
 
 // Get gets a variable value within an evaluation context.
 func (c rendererContext) Get(name string) interface{} {
+	return c.ctx.config.GetVariable(c.ctx.bindings, name)
+}
+
+// Get the value within an evaluation context directly (ignoring lax/strict settings).
+func (c rendererContext) GetDirect(name string) interface{} {
 	return c.ctx.bindings[name]
+}
+
+func (c rendererContext) State() map[string]interface{} {
+	return c.ctx.state
+}
+
+func (c rendererContext) GetState(key string, defaulter func() interface{}) interface{} {
+	if state, ok := c.ctx.state[key]; ok {
+		return state
+	} else {
+		state = defaulter()
+		c.ctx.state[key] = state
+		return state
+	}
+}
+
+func (c rendererContext) sourceLoc() parser.SourceLoc {
+	if c.cn != nil {
+		return c.cn.SourceLoc
+	} else if c.node != nil {
+		return c.node.SourceLoc
+	} else {
+		panic("could not determine SourceLoc")
+	}
 }
 
 func (c rendererContext) ExpandTagArg() (string, error) {
 	args := c.TagArgs()
 	if strings.Contains(args, "{{") {
-		root, err := c.ctx.config.Compile(args, c.node.SourceLoc)
+		root, err := c.ctx.config.Compile(args, c.sourceLoc())
 		if err != nil {
 			return "", err
 		}
 		buf := new(bytes.Buffer)
-		err = Render(root, buf, c.ctx.bindings, c.ctx.config)
+		err = RenderWithState(root, buf, c.ctx.bindings, c.ctx.state, c.ctx.config)
 		if err != nil {
 			return "", err
 		}
@@ -126,7 +162,7 @@ func (c rendererContext) RenderFile(filename string, b map[string]interface{}) (
 		bindings[k] = v
 	}
 	buf := new(bytes.Buffer)
-	if err := Render(root, buf, bindings, c.ctx.config); err != nil {
+	if err := RenderWithState(root, buf, bindings, c.ctx.state, c.ctx.config); err != nil {
 		return "", err
 	}
 	return buf.String(), nil

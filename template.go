@@ -26,8 +26,12 @@ func newTemplate(cfg *render.Config, source []byte, path string, line int) (*Tem
 
 // Render executes the template with the specified variable bindings.
 func (t *Template) Render(vars Bindings) ([]byte, SourceError) {
+	return t.RenderWithState(vars, map[string]interface{}{})
+}
+
+func (t *Template) RenderWithState(vars, state Bindings) ([]byte, SourceError) {
 	buf := new(bytes.Buffer)
-	err := render.Render(t.root, buf, vars, *t.cfg)
+	err := render.RenderWithState(t.root, buf, vars, state, *t.cfg)
 	if err != nil {
 		return nil, err
 	}
@@ -36,7 +40,11 @@ func (t *Template) Render(vars Bindings) ([]byte, SourceError) {
 
 // RenderString is a convenience wrapper for Render, that has string input and output.
 func (t *Template) RenderString(b Bindings) (string, SourceError) {
-	bs, err := t.Render(b)
+	return t.RenderStringWithState(b, map[string]interface{}{})
+}
+
+func (t *Template) RenderStringWithState(b, state Bindings) (string, SourceError) {
+	bs, err := t.RenderWithState(b, state)
 	if err != nil {
 		return "", err
 	}
