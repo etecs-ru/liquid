@@ -51,6 +51,8 @@ var filterTests = []struct {
 	{`mixed_case_array | sort_natural | join`, "a B c"},
 	{`mixed_case_hash_values | sort_natural: 'key' | map: 'key' | join`, "a B c"},
 
+	{`12 | compact`, 12},
+
 	{`dup_ints | concat: dup_strings | join`, "1 2 1 3 one two one three"},
 	{`dup_ints | concat: empty_array | join`, "1 2 1 3"},
 	{`empty_array | concat: empty_array | join`, ""},

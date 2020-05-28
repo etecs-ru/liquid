@@ -40,13 +40,19 @@ func AddStandardFilters(fd FilterDictionary) { // nolint: gocyclo
 		return append(result, b...)
 	})
 
-	fd.AddFilter("compact", func(a []interface{}) (result []interface{}) {
-		for _, item := range a {
+	fd.AddFilter("compact", func(a interface{}) interface{} {
+		arr, ok := values.IsArray(a)
+		if !ok {
+			return a
+		}
+
+		var result []interface{}
+		for _, item := range arr {
 			if item != nil {
 				result = append(result, item)
 			}
 		}
-		return
+		return result
 	})
 	fd.AddFilter("join", joinFilter)
 	fd.AddFilter("map", func(a []map[string]interface{}, key string) (result []interface{}) {
