@@ -22,6 +22,8 @@ var renderTests = []struct{ in, out string }{
 	{`{{ date }}`, "2015-07-17 15:04:05 +0000"},
 	{`{{ "string" }}`, "string"},
 	{`{{ array }}`, "firstsecondthird"},
+	{`{{ interface_array }}`, "firstsecondthird"},
+	{`{{ empty_array }}`, ""},
 
 	// variables and properties
 	{`{{ int }}`, "123"},
@@ -57,9 +59,11 @@ var renderErrorTests = []struct{ in, out string }{
 }
 
 var renderTestBindings = map[string]interface{}{
-	"array": []string{"first", "second", "third"},
-	"date":  time.Date(2015, 7, 17, 15, 4, 5, 123456789, time.UTC),
-	"int":   123,
+	"array":           []string{"first", "second", "third"},
+	"interface_array": []interface{}{"first", "second", "third"},
+	"empty_array":     []interface{}{},
+	"date":            time.Date(2015, 7, 17, 15, 4, 5, 123456789, time.UTC),
+	"int":             123,
 	"sort_prop": []map[string]interface{}{
 		{"weight": 1},
 		{"weight": 5},

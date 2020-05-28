@@ -104,7 +104,7 @@ var evaluatorTests = []struct {
 	{`"seafood" | length`, 8},
 }
 
-var evaluatorTestBindings = (map[string]interface{}{
+var evaluatorTestBindings = map[string]interface{}{
 	"n":               123,
 	"array":           []string{"first", "second", "third"},
 	"interface_array": []interface{}{"first", "second", "third"},
@@ -116,7 +116,7 @@ var evaluatorTestBindings = (map[string]interface{}{
 		"c": []string{"r", "g", "b"},
 	},
 	"hash_with_size_key": map[string]interface{}{"size": "key_value"},
-})
+}
 
 func TestEvaluateString(t *testing.T) {
 	cfg := NewConfig()

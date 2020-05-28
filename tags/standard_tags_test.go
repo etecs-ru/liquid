@@ -32,6 +32,12 @@ var tagTests = []struct{ in, expected string }{
 	// TODO research whether Liquid requires matching interior tags
 	{`pre{% raw %}{{ a }}{% undefined_tag %}{% endraw %}post`, "pre{{ a }}{% undefined_tag %}post"},
 	{`pre{% raw %}{% if false %}anyway-{% endraw %}post`, "pre{% if false %}anyway-post"},
+
+	// increment/decrement
+	{`{% increment abc %}{% increment abc %}{% increment abc %}`, "012"},
+	{`{% decrement abc %}{% decrement abc %}{% decrement abc %}`, "-1-2-3"},
+	{`{% increment abc %}{% increment abc %}{% increment abc %}{% decrement abc %}`, "0121"},
+	{`{% increment abc %}{% increment abc %}{% increment def %}{% decrement abc %}`, "0100"},
 }
 
 var tagErrorTests = []struct{ in, expected string }{

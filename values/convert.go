@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"reflect"
 	"strconv"
+	"strings"
 	"time"
 
 	yaml "gopkg.in/yaml.v2"
@@ -19,6 +20,7 @@ func typeErrorf(format string, a ...interface{}) TypeError {
 }
 
 var timeType = reflect.TypeOf(time.Now())
+var numberType = reflect.TypeOf(Number{})
 
 func conversionError(modifier string, value interface{}, typ reflect.Type) error {
 	if modifier != "" {
@@ -61,6 +63,64 @@ func convertValueToFloat(value interface{}, typ reflect.Type) (float64, error) {
 	return 0, conversionError("", value, typ)
 }
 
+type Number struct {
+	Value   interface{}
+	IsFloat bool
+}
+
+func (n Number) AsInt64() int64 {
+	if n.IsFloat {
+		return int64(n.Value.(float64))
+	} else {
+		return n.Value.(int64)
+	}
+}
+
+func (n Number) AsFloat64() float64 {
+	if n.IsFloat {
+		return n.Value.(float64)
+	} else {
+		return float64(n.Value.(int64))
+	}
+}
+
+func convertValueToNumber(value interface{}, typ reflect.Type) Number {
+	if value == nil {
+		return Number{int64(0), false}
+	}
+
+	switch x := value.(type) {
+	case int:
+		return Number{int64(x), false}
+	case int16:
+		return Number{int64(x), false}
+	case int32:
+		return Number{int64(x), false}
+	case int64:
+		return Number{x, false}
+	case uint:
+		return Number{int64(x), false}
+	case uint16:
+		return Number{int64(x), false}
+	case uint32:
+		return Number{int64(x), false}
+	case uint64:
+		return Number{int64(x), false}
+	case float32:
+		return Number{float64(x), true}
+	case float64:
+		return Number{x, true}
+	}
+
+	if i, err := convertValueToInt(value, typ); err == nil {
+		return Number{i, false}
+	}
+	if f, err := convertValueToFloat(value, typ); err == nil {
+		return Number{f, true}
+	}
+	return Number{int64(0), false}
+}
+
 // Convert value to the type. This is a more aggressive conversion, that will
 // recursively create new map and slice values as necessary. It doesn't
 // handle circular references.
@@ -73,6 +133,9 @@ func Convert(value interface{}, typ reflect.Type) (interface{}, error) { // noli
 	}
 	if typ == timeType && rv.Kind() == reflect.String {
 		return ParseDate(value.(string))
+	}
+	if typ == numberType {
+		return convertValueToNumber(value, typ), nil
 	}
 	// currently unused:
 	// case reflect.PtrTo(r.Type()) == typ:
@@ -212,16 +275,30 @@ func Convert(value interface{}, typ reflect.Type) (interface{}, error) { // noli
 			return result.Interface(), nil
 		}
 	case reflect.String:
-		switch value := value.(type) {
-		case []byte:
-			return string(value), nil
-		case fmt.Stringer:
-			return value.String(), nil
-		default:
-			return fmt.Sprint(value), nil
-		}
+		return convertToString(value), nil
 	}
 	return nil, conversionError("", value, typ)
+}
+
+func convertToString(value interface{}) string {
+	switch value := value.(type) {
+	case []byte:
+		return string(value)
+	case fmt.Stringer:
+		return value.String()
+	default:
+		rv := reflect.ValueOf(value)
+		switch rv.Kind() {
+		case reflect.Slice, reflect.Array:
+			var b strings.Builder
+			for i := 0; i < rv.Len(); i++ {
+				b.WriteString(convertToString(rv.Index(i).Interface()))
+			}
+			return b.String()
+		default:
+			return fmt.Sprint(value)
+		}
+	}
 }
 
 // MustConvert is like Convert, but panics if conversion fails.

@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/osteele/liquid/expressions"
+	"github.com/osteele/liquid/parser"
 )
 
 // Context provides the rendering context for a tag renderer.
@@ -51,6 +52,10 @@ type Context interface {
 	TagName() string
 	// WrapError creates a new error that records the source location from the current context.
 	WrapError(err error) Error
+	// State gets the full state of the renderer.
+	State() map[string]interface{}
+	// GetState returns a named portion of the state and initializes it using a default function if not found
+	GetState(key string, defaulter func() interface{}) interface{}
 }
 
 type rendererContext struct {
@@ -86,15 +91,39 @@ func (c rendererContext) GetDirect(name string) interface{} {
 	return c.ctx.bindings[name]
 }
 
+func (c rendererContext) State() map[string]interface{} {
+	return c.ctx.state
+}
+
+func (c rendererContext) GetState(key string, defaulter func() interface{}) interface{} {
+	if state, ok := c.ctx.state[key]; ok {
+		return state
+	} else {
+		state = defaulter()
+		c.ctx.state[key] = state
+		return state
+	}
+}
+
+func (c rendererContext) sourceLoc() parser.SourceLoc {
+	if c.cn != nil {
+		return c.cn.SourceLoc
+	} else if c.node != nil {
+		return c.node.SourceLoc
+	} else {
+		panic("could not determine SourceLoc")
+	}
+}
+
 func (c rendererContext) ExpandTagArg() (string, error) {
 	args := c.TagArgs()
 	if strings.Contains(args, "{{") {
-		root, err := c.ctx.config.Compile(args, c.node.SourceLoc)
+		root, err := c.ctx.config.Compile(args, c.sourceLoc())
 		if err != nil {
 			return "", err
 		}
 		buf := new(bytes.Buffer)
-		err = Render(root, buf, c.ctx.bindings, c.ctx.config)
+		err = RenderWithState(root, buf, c.ctx.bindings, c.ctx.state, c.ctx.config)
 		if err != nil {
 			return "", err
 		}
@@ -133,7 +162,7 @@ func (c rendererContext) RenderFile(filename string, b map[string]interface{}) (
 		bindings[k] = v
 	}
 	buf := new(bytes.Buffer)
-	if err := Render(root, buf, bindings, c.ctx.config); err != nil {
+	if err := RenderWithState(root, buf, bindings, c.ctx.state, c.ctx.config); err != nil {
 		return "", err
 	}
 	return buf.String(), nil
