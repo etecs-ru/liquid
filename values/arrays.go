@@ -21,6 +21,7 @@ func Length(value interface{}) int {
 }
 
 var interfaceArrType = reflect.TypeOf([]interface{}{})
+
 func IsArray(a interface{}) ([]interface{}, bool) {
 	if arr, err := Convert(a, interfaceArrType); err != nil {
 		return nil, false

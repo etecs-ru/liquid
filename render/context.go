@@ -123,7 +123,7 @@ func (c rendererContext) ExpandTagArg() (string, error) {
 			return "", err
 		}
 		buf := new(bytes.Buffer)
-		err = Render(root, buf, c.ctx.bindings, c.ctx.state, c.ctx.config)
+		err = RenderWithState(root, buf, c.ctx.bindings, c.ctx.state, c.ctx.config)
 		if err != nil {
 			return "", err
 		}
@@ -162,7 +162,7 @@ func (c rendererContext) RenderFile(filename string, b map[string]interface{}) (
 		bindings[k] = v
 	}
 	buf := new(bytes.Buffer)
-	if err := Render(root, buf, bindings, c.ctx.state, c.ctx.config); err != nil {
+	if err := RenderWithState(root, buf, bindings, c.ctx.state, c.ctx.config); err != nil {
 		return "", err
 	}
 	return buf.String(), nil

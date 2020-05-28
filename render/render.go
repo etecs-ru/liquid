@@ -11,7 +11,12 @@ import (
 )
 
 // Render renders the render tree.
-func Render(node Node, w io.Writer, vars, state map[string]interface{}, c Config) Error {
+func Render(node Node, w io.Writer, vars map[string]interface{}, c Config) Error {
+	return RenderWithState(node, w, vars, map[string]interface{}{}, c)
+}
+
+// RenderWithState renders the render tree with state attached.
+func RenderWithState(node Node, w io.Writer, vars, state map[string]interface{}, c Config) Error {
 	tw := trimWriter{w: w}
 	if err := node.render(&tw, newNodeContext(vars, state, c)); err != nil {
 		return err

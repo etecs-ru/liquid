@@ -29,9 +29,9 @@ func (t *Template) Render(vars Bindings) ([]byte, SourceError) {
 	return t.RenderWithState(vars, map[string]interface{}{})
 }
 
-func (t *Template) RenderWithState(vars Bindings, state Bindings) ([]byte, SourceError) {
+func (t *Template) RenderWithState(vars, state Bindings) ([]byte, SourceError) {
 	buf := new(bytes.Buffer)
-	err := render.Render(t.root, buf, vars, state, *t.cfg)
+	err := render.RenderWithState(t.root, buf, vars, state, *t.cfg)
 	if err != nil {
 		return nil, err
 	}
@@ -43,7 +43,7 @@ func (t *Template) RenderString(b Bindings) (string, SourceError) {
 	return t.RenderStringWithState(b, map[string]interface{}{})
 }
 
-func (t *Template) RenderStringWithState(b Bindings, state Bindings) (string, SourceError) {
+func (t *Template) RenderStringWithState(b, state Bindings) (string, SourceError) {
 	bs, err := t.RenderWithState(b, state)
 	if err != nil {
 		return "", err

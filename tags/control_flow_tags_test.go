@@ -66,7 +66,7 @@ func TestControlFlowTags(t *testing.T) {
 			root, err := cfg.Compile(test.in, parser.SourceLoc{})
 			require.NoErrorf(t, err, test.in)
 			buf := new(bytes.Buffer)
-			err = render.Render(root, buf, tagTestBindings, map[string]interface{}{}, cfg)
+			err = render.Render(root, buf, tagTestBindings, cfg)
 			require.NoErrorf(t, err, test.in)
 			require.Equalf(t, test.expected, buf.String(), test.in)
 		})
@@ -93,7 +93,7 @@ func TestControlFlowTags_errors(t *testing.T) {
 		t.Run(fmt.Sprintf("%02d", i+1), func(t *testing.T) {
 			root, err := cfg.Compile(test.in, parser.SourceLoc{})
 			require.NoErrorf(t, err, test.in)
-			err = render.Render(root, ioutil.Discard, tagTestBindings, map[string]interface{}{}, cfg)
+			err = render.Render(root, ioutil.Discard, tagTestBindings, cfg)
 			require.Errorf(t, err, test.in)
 			require.Contains(t, err.Error(), test.expected, test.in)
 		})
