@@ -41,8 +41,19 @@ var cfTagTests = []struct{ in, expected string }{
 	{`{% if false %}0{% elsif false %}1{% else %}2{% endif %}`, "2"},
 
 	// unless
-	{`{% unless true %}false{% endunless %}`, ""},
-	{`{% unless false %}true{% endunless %}`, "true"},
+	{`{% unless true %}true{% endunless %}`, ""},
+	{`{% unless false %}false{% endunless %}`, "false"},
+	{`{% unless 0 %}true{% endunless %}`, ""},
+	{`{% unless 1 %}true{% endunless %}`, ""},
+	{`{% unless x %}true{% endunless %}`, ""},
+	{`{% unless y %}true{% endunless %}`, "true"},
+	{`{% unless true %}true{% endunless %}`, ""},
+	{`{% unless false %}false{% endunless %}`, "false"},
+	{`{% unless true %}true{% else %}false{% endunless %}`, "false"},
+	{`{% unless false %}false{% else %}true{% endunless %}`, "false"},
+	{`{% unless true %}0{% elsif true %}1{% else %}2{% endunless %}`, "1"},
+	{`{% unless true %}0{% elsif false %}1{% else %}2{% endunless %}`, "2"},
+	{`{% unless false %}0{% elsif true %}1{% else %}2{% endunless %}`, "0"},
 }
 
 var cfTagCompilationErrorTests = []struct{ in, expected string }{

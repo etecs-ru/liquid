@@ -10,7 +10,7 @@ func TestBlockSyntax(t *testing.T) {
 	cfg := NewConfig()
 	cfg.AddBlock("if").Clause("else")
 	cfg.AddBlock("case").Clause("else")
-	cfg.AddBlock("unless")
+	cfg.AddBlock("unless").Clause("else")
 
 	require.Panics(t, func() { cfg.AddBlock("if") })
 
@@ -19,6 +19,6 @@ func TestBlockSyntax(t *testing.T) {
 	elseBlock, _ := g.findBlockDef("else")
 	unlessBlock, _ := g.findBlockDef("unless")
 	require.True(t, elseBlock.CanHaveParent(ifBlock))
-	require.False(t, elseBlock.CanHaveParent(unlessBlock))
-	require.Equal(t, []string{"case", "if"}, elseBlock.ParentTags())
+	require.True(t, elseBlock.CanHaveParent(unlessBlock))
+	require.Equal(t, []string{"case", "if", "unless"}, elseBlock.ParentTags())
 }

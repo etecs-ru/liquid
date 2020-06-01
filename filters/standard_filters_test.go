@@ -2,6 +2,7 @@ package filters
 
 import (
 	"fmt"
+	"math"
 	"os"
 	"testing"
 	"time"
@@ -195,6 +196,7 @@ var filterTests = []struct {
 	{`"20" | divided_by: 7`, int64(2)},
 	{`20 | divided_by: 7.0`, 2.857142857142857},
 	{`"20" | divided_by: 7.0`, 2.857142857142857},
+	{`"20" | divided_by: 0.0`, math.Inf(1)},
 	//{`20 | divided_by: 's'`, nil}, // TODO test for error
 
 	{`1.2 | round`, int64(1)},
