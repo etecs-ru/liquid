@@ -3,6 +3,7 @@ package tags
 
 import (
 	"io"
+	"strings"
 
 	"github.com/osteele/liquid/expressions"
 	"github.com/osteele/liquid/render"
@@ -48,8 +49,8 @@ func assignTag(source string) (func(io.Writer, render.Context) error, error) {
 }
 
 func captureTagCompiler(node render.BlockNode) (func(io.Writer, render.Context) error, error) {
-	// TODO verify syntax
-	varname := node.Args
+	// only the first "word" gets used as the variable name; i.e., {% capture x y z %} results in a variable named 'x'.
+	varname := strings.Fields(node.Args)[0]
 	return func(w io.Writer, ctx render.Context) error {
 		s, err := ctx.InnerString()
 		if err != nil {

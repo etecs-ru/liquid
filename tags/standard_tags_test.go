@@ -25,6 +25,7 @@ var tagTests = []struct{ in, expected string }{
 	{`{% assign av = 1 %}{{ av }}`, "1"},
 	{`{% assign av = obj.a %}{{ av }}`, "1"},
 	{`{% capture x %}captured{% endcapture %}{{ x }}`, "captured"},
+	{`{% capture x y %}captured{% endcapture %}{{ x }}`, "captured"},
 
 	// TODO research whether Liquid requires matching interior tags
 	{`{% comment %}{{ a }}{% undefined_tag %}{% endcomment %}`, ""},
