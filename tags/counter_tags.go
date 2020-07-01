@@ -5,7 +5,7 @@ import (
 	"io"
 	"strconv"
 
-	"github.com/osteele/liquid/render"
+	"github.com/etecs-ru/liquid/render"
 )
 
 type counter interface {

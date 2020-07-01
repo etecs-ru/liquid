@@ -6,8 +6,8 @@ import (
 	"io/ioutil"
 	"strings"
 
-	"github.com/osteele/liquid/expressions"
-	"github.com/osteele/liquid/parser"
+	"github.com/etecs-ru/liquid/expressions"
+	"github.com/etecs-ru/liquid/parser"
 )
 
 // Context provides the rendering context for a tag renderer.

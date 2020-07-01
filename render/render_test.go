@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/osteele/liquid/parser"
+	"github.com/etecs-ru/liquid/parser"
 	"github.com/stretchr/testify/require"
 )
 
