@@ -1,15 +1,16 @@
+PROJECT_NAME := "liquid"
+PACKAGE := "github.com/etecs-ru/$(PROJECT_NAME)"
+PKG_LIST := $(shell go list ${PACKAGE}/... | grep -v /vendor/)
 SOURCEDIR=.
 SOURCES := $(shell find $(SOURCEDIR) -name '*.go')
 
-LIB = liquid
-PACKAGE = github.com/etecs-ru/liquid
 LDFLAGS=
 
 .DEFAULT_GOAL: ci
 .PHONY: ci clean coverage deps generate imports install lint pre-commit setup test help
 
 clean: ## remove binary files
-	rm -f ${LIB} ${CMD}
+	rm -f ${PROJECT_NAME}
 
 coverage: ## test the package, with coverage
 	go test -cov ./...
@@ -24,17 +25,19 @@ imports: ## list imports
 	@go list -f '{{join .Imports "\n"}}' ./... | grep -v `go list -f '{{.ImportPath}}'` | grep '\.' | sort | uniq
 
 lint: ## lint the package
-	gometalinter ./... --tests --deadline=5m --include=gofmt --exclude expressions/scanner.go --exclude y.go --exclude '.*_string.go' --disable=gotype --disable=interfacer
+	#golangci-lint run
+	#gometalinter ./... --tests --deadline=5m --include=gofmt \
+	#		--exclude expressions/scanner.go \
+	#		--exclude y.go \
+	#		--exclude '.*_string.go' \
+	#		--disable=gotype --disable=interfacer
 	@echo lint passed
 
 pre-commit: lint test ## lint and test the package
 
 setup: ## install dependencies and development tools
-	go get golang.org/x/tools/cmd/stringer
 	go install golang.org/x/tools/cmd/goyacc
-	go get -t ./...
-	go get github.com/alecthomas/gometalinter
-	gometalinter --install
+	go mod download
 
 test: ## test the package
 	go test ./...
@@ -42,3 +45,7 @@ test: ## test the package
 # Source: https://marmelab.com/blog/2016/02/29/auto-documented-makefile.html
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+
+test-coverage: ## Run tests with coverage
+	@go test -short -coverprofile cover.out -covermode=atomic ${PACKAGE_LIST}
+	@cat cover.out >> coverage.txt
