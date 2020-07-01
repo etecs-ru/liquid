@@ -25,11 +25,7 @@ imports: ## list imports
 	@go list -f '{{join .Imports "\n"}}' ./... | grep -v `go list -f '{{.ImportPath}}'` | grep '\.' | sort | uniq
 
 lint: ## lint the package
-	#golangci-lint run
-	#gometalinter ./... --tests --deadline=5m --include=gofmt \
-	#		--exclude expressions/scanner.go \
-	#		--exclude y.go \
-	#		--exclude '.*_string.go' \
+	golangci-lint run ./...
 	#		--disable=gotype --disable=interfacer
 	@echo lint passed
 
