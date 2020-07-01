@@ -1,4 +1,4 @@
-module github.com/etecs-ru/liquid
+module github.com/etecs-ru/liquid/v2
 
 go 1.14
 
