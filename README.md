@@ -31,9 +31,7 @@ It was developed for use in the [Gojekyll](https://github.com/osteele/gojekyll) 
 
 ## Installation
 
-`go get gopkg.in/osteele/liquid.v1` # latest snapshot
-
-`go get -u github.com/etecs-ru/liquid` # development version
+`go get -u github.com/etecs-ru/liquid/v2`
 
 ## Usage
 
