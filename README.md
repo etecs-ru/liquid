@@ -174,8 +174,8 @@ The [original Liquid engine](https://shopify.github.io/liquid), of course, for t
 
 MIT License
 
-[coveralls-url]: https://coveralls.io/r/etecs-ru/liquid?branch=master
-[coveralls-svg]: https://img.shields.io/coveralls/etecs-ru/liquid.svg?branch=master
+[coveralls-url]: https://codecov.io/gh/etecs-ru/liquid
+[coveralls-svg]: https://codecov.io/gh/etecs-ru/liquid/branch/master/graph/badge.svg
 
 [godoc-url]: https://godoc.org/github.com/etecs-ru/liquid
 [godoc-svg]: https://godoc.org/github.com/etecs-ru/liquid?status.svg
@@ -185,9 +185,3 @@ MIT License
 
 [go-report-card-url]: https://goreportcard.com/report/github.com/etecs-ru/liquid
 [go-report-card-svg]: https://goreportcard.com/badge/github.com/etecs-ru/liquid
-
-[travis-url]: https://travis-ci.org/osteele/liquid
-[travis-svg]: https://img.shields.io/travis/osteele/liquid.svg?branch=master
-
-[appveyor-url]: https://ci.appveyor.com/project/osteele/liquid
-[appveyor-svg]: https://ci.appveyor.com/api/projects/status/76tnj36879n671jx?svg=true
