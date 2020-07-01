@@ -102,24 +102,26 @@ var convertErrorTests = []struct {
 
 func TestConvert(t *testing.T) {
 	for i, test := range convertTests {
+		testV := test
 		t.Run(fmt.Sprintf("%02d", i+1), func(t *testing.T) {
-			typ := reflect.TypeOf(test.expected)
-			name := fmt.Sprintf("Convert %#v -> %v", test.value, typ)
-			value, err := Convert(test.value, typ)
+			typ := reflect.TypeOf(testV.expected)
+			name := fmt.Sprintf("Convert %#v -> %v", testV.value, typ)
+			value, err := Convert(testV.value, typ)
 			require.NoErrorf(t, err, name)
-			require.Equalf(t, test.expected, value, name)
+			require.Equalf(t, testV.expected, value, name)
 		})
 	}
 }
 
 func TestConvert_errors(t *testing.T) {
 	for i, test := range convertErrorTests {
+		testV := test
 		t.Run(fmt.Sprintf("%02d", i+1), func(t *testing.T) {
-			typ := reflect.TypeOf(test.proto)
-			name := fmt.Sprintf("Convert %#v -> %v", test.value, typ)
-			_, err := Convert(test.value, typ)
+			typ := reflect.TypeOf(testV.proto)
+			name := fmt.Sprintf("Convert %#v -> %v", testV.value, typ)
+			_, err := Convert(testV.value, typ)
 			require.Errorf(t, err, name)
-			for _, expected := range test.expected {
+			for _, expected := range testV.expected {
 				require.Containsf(t, err.Error(), expected, name)
 			}
 		})

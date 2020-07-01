@@ -51,10 +51,11 @@ var parserTests = []struct{ in string }{
 func TestParseErrors(t *testing.T) {
 	cfg := Config{Grammar: grammarFake{}}
 	for i, test := range parseErrorTests {
+		testV := test
 		t.Run(fmt.Sprintf("%02d", i+1), func(t *testing.T) {
-			_, err := cfg.Parse(test.in, SourceLoc{})
-			require.Errorf(t, err, test.in)
-			require.Containsf(t, err.Error(), test.expected, test.in)
+			_, err := cfg.Parse(testV.in, SourceLoc{})
+			require.Errorf(t, err, testV.in)
+			require.Containsf(t, err.Error(), testV.expected, testV.in)
 		})
 	}
 }
@@ -62,9 +63,10 @@ func TestParseErrors(t *testing.T) {
 func TestParser(t *testing.T) {
 	cfg := Config{Grammar: grammarFake{}}
 	for i, test := range parserTests {
+		testV := test
 		t.Run(fmt.Sprintf("%02d", i+1), func(t *testing.T) {
-			_, err := cfg.Parse(test.in, SourceLoc{})
-			require.NoError(t, err, test.in)
+			_, err := cfg.Parse(testV.in, SourceLoc{})
+			require.NoError(t, err, testV.in)
 		})
 	}
 }

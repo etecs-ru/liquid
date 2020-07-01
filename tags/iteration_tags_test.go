@@ -124,19 +124,20 @@ var iterationTestBindings = map[string]interface{}{
 
 func testIterationTags(config render.Config, t *testing.T) {
 	for i, test := range iterationTests {
+		testV := test
 		t.Run(fmt.Sprintf("%02d", i+1), func(t *testing.T) {
-			root, err := config.Compile(test.in, parser.SourceLoc{})
-			require.NoErrorf(t, err, test.in)
+			root, err := config.Compile(testV.in, parser.SourceLoc{})
+			require.NoErrorf(t, err, testV.in)
 			buf := new(bytes.Buffer)
 			err = render.Render(root, buf, iterationTestBindings, config)
-			require.NoErrorf(t, err, test.in)
+			require.NoErrorf(t, err, testV.in)
 			actual := buf.String()
-			if strings.Contains(test.in, "{% tablerow") {
+			if strings.Contains(testV.in, "{% tablerow") {
 				replaceWS := regexp.MustCompile(`\n\s*`).ReplaceAllString
 				actual = replaceWS(actual, "")
-				test.expected = replaceWS(test.expected, "")
+				testV.expected = replaceWS(testV.expected, "")
 			}
-			require.Equalf(t, test.expected, actual, test.in)
+			require.Equalf(t, testV.expected, actual, testV.in)
 		})
 	}
 }
@@ -158,20 +159,22 @@ func TestIterationTags_errors(t *testing.T) {
 	AddStandardTags(cfg)
 
 	for i, test := range iterationSyntaxErrorTests {
+		testV := test
 		t.Run(fmt.Sprintf("%02d", i+1), func(t *testing.T) {
-			_, err := cfg.Compile(test.in, parser.SourceLoc{})
-			require.Errorf(t, err, test.in)
-			require.Containsf(t, err.Error(), test.expected, test.in)
+			_, err := cfg.Compile(testV.in, parser.SourceLoc{})
+			require.Errorf(t, err, testV.in)
+			require.Containsf(t, err.Error(), testV.expected, testV.in)
 		})
 	}
 
 	for i, test := range iterationErrorTests {
+		testV := test
 		t.Run(fmt.Sprintf("%02d", i+1+len(iterationSyntaxErrorTests)), func(t *testing.T) {
-			root, err := cfg.Compile(test.in, parser.SourceLoc{})
-			require.NoErrorf(t, err, test.in)
+			root, err := cfg.Compile(testV.in, parser.SourceLoc{})
+			require.NoErrorf(t, err, testV.in)
 			err = render.Render(root, ioutil.Discard, iterationTestBindings, cfg)
-			require.Errorf(t, err, test.in)
-			require.Containsf(t, err.Error(), test.expected, test.in)
+			require.Errorf(t, err, testV.in)
+			require.Containsf(t, err.Error(), testV.expected, testV.in)
 		})
 	}
 }

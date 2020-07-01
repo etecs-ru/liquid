@@ -34,34 +34,35 @@ func (c Config) parseTokens(tokens []Token) (ASTNode, Error) { // nolint: gocycl
 		inRaw     = false
 	)
 	for _, tok := range tokens {
+		tokV := tok
 		switch {
 		// The parser needs to know about comment and raw, because tags inside
 		// needn't match each other e.g. {%comment%}{%if%}{%endcomment%}
 		// TODO is this true?
 		case inComment:
-			if tok.Type == TagTokenType && tok.Name == "endcomment" {
+			if tokV.Type == TagTokenType && tokV.Name == "endcomment" {
 				inComment = false
 			}
 		case inRaw:
-			if tok.Type == TagTokenType && tok.Name == "endraw" {
+			if tokV.Type == TagTokenType && tokV.Name == "endraw" {
 				inRaw = false
-			} else {
-				rawTag.Slices = append(rawTag.Slices, tok.Source)
+			} else if rawTag != nil {
+				rawTag.Slices = append(rawTag.Slices, tokV.Source)
 			}
-		case tok.Type == ObjTokenType:
-			expr, err := expressions.Parse(tok.Args)
+		case tokV.Type == ObjTokenType:
+			expr, err := expressions.Parse(tokV.Args)
 			if err != nil {
-				return nil, WrapError(err, tok)
+				return nil, WrapError(err, tokV)
 			}
-			*ap = append(*ap, &ASTObject{tok, expr})
-		case tok.Type == TextTokenType:
-			*ap = append(*ap, &ASTText{Token: tok})
-		case tok.Type == TagTokenType:
-			if cs, ok := g.BlockSyntax(tok.Name); ok {
+			*ap = append(*ap, &ASTObject{tokV, expr})
+		case tokV.Type == TextTokenType:
+			*ap = append(*ap, &ASTText{Token: tokV})
+		case tokV.Type == TagTokenType:
+			if cs, ok := g.BlockSyntax(tokV.Name); ok {
 				switch {
-				case tok.Name == "comment":
+				case tokV.Name == "comment":
 					inComment = true
-				case tok.Name == "raw":
+				case tokV.Name == "raw":
 					inRaw = true
 					rawTag = &ASTRaw{}
 					*ap = append(*ap, rawTag)
@@ -70,17 +71,17 @@ func (c Config) parseTokens(tokens []Token) (ASTNode, Error) { // nolint: gocycl
 					if sd != nil {
 						suffix = "; immediate parent is " + sd.TagName()
 					}
-					return nil, Errorf(tok, "%s not inside %s%s", tok.Name, strings.Join(cs.ParentTags(), " or "), suffix)
+					return nil, Errorf(tokV, "%s not inside %s%s", tokV.Name, strings.Join(cs.ParentTags(), " or "), suffix)
 				case cs.IsBlockStart():
 					push := func() {
 						stack = append(stack, frame{syntax: sd, node: bn, ap: ap})
-						sd, bn = cs, &ASTBlock{Token: tok, syntax: cs}
+						sd, bn = cs, &ASTBlock{Token: tokV, syntax: cs}
 						*ap = append(*ap, bn)
 					}
 					push()
 					ap = &bn.Body
 				case cs.IsClause():
-					n := &ASTBlock{Token: tok, syntax: cs}
+					n := &ASTBlock{Token: tokV, syntax: cs}
 					bn.Clauses = append(bn.Clauses, n)
 					ap = &n.Body
 				case cs.IsBlockEnd():
@@ -91,10 +92,10 @@ func (c Config) parseTokens(tokens []Token) (ASTNode, Error) { // nolint: gocycl
 					}
 					pop()
 				default:
-					panic(fmt.Errorf("block type %q", tok.Name))
+					panic(fmt.Errorf("block type %q", tokV.Name))
 				}
 			} else {
-				*ap = append(*ap, &ASTTag{tok})
+				*ap = append(*ap, &ASTTag{tokV})
 			}
 		}
 	}

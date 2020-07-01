@@ -26,7 +26,7 @@ func conversionError(modifier string, value interface{}, typ reflect.Type) error
 	if modifier != "" {
 		modifier += " "
 	}
-	switch ref := value.(type) {
+	switch ref := value.(type) { // nolint: gocritic
 	case reflect.Value:
 		value = ref.Interface()
 	}
@@ -51,7 +51,7 @@ func convertValueToInt(value interface{}, typ reflect.Type) (int64, error) {
 }
 
 func convertValueToFloat(value interface{}, typ reflect.Type) (float64, error) {
-	switch value := value.(type) {
+	switch value := value.(type) { // nolint: gocritic
 	// case int is handled by rv.Convert(typ) in Convert function
 	case string:
 		v, err := strconv.ParseFloat(value, 64)

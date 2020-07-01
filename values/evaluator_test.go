@@ -29,9 +29,10 @@ var lessTests = []struct {
 
 func TestLess(t *testing.T) {
 	for i, test := range lessTests {
+		testV := test
 		t.Run(fmt.Sprintf("%02d", i+1), func(t *testing.T) {
-			value := Less(test.a, test.b)
-			require.Equalf(t, test.expected, value, "%#v < %#v", test.a, test.b)
+			value := Less(testV.a, testV.b)
+			require.Equalf(t, testV.expected, value, "%#v < %#v", testV.a, testV.b)
 		})
 	}
 }

@@ -35,10 +35,11 @@ var testBindings = map[string]interface{}{
 func TestEngine_ParseAndRenderString(t *testing.T) {
 	engine := NewEngine()
 	for i, test := range liquidTests {
+		testV := test
 		t.Run(fmt.Sprint(i+1), func(t *testing.T) {
-			out, err := engine.ParseAndRenderString(test.in, testBindings)
-			require.NoErrorf(t, err, test.in)
-			require.Equalf(t, test.expected, out, test.in)
+			out, err := engine.ParseAndRenderString(testV.in, testBindings)
+			require.NoErrorf(t, err, testV.in)
+			require.Equalf(t, testV.expected, out, testV.in)
 		})
 	}
 }
@@ -94,6 +95,6 @@ func BenchmarkEngine_Parse(b *testing.B) {
 	s := buf.Bytes()
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		engine.ParseTemplate(s)
+		engine.ParseTemplate(s) // nolint: errcheck
 	}
 }

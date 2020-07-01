@@ -60,9 +60,10 @@ func TestScan(t *testing.T) {
 	require.Equal(t, `[TextTokenType{"pre"} TagTokenType{Tag:"tag", Args:"args"} TextTokenType{"mid"} ObjTokenType{"object"} TextTokenType{"post"}]`, fmt.Sprint(tokens))
 
 	for i, test := range scannerCountTests {
+		testV := test
 		t.Run(fmt.Sprintf("%02d", i), func(t *testing.T) {
-			tokens := scan(test.in)
-			require.Len(t, tokens, test.len)
+			tokens := scan(testV.in)
+			require.Len(t, tokens, testV.len)
 		})
 	}
 }
@@ -83,18 +84,19 @@ func TestScan_ws(t *testing.T) {
 		{`{% tag arg -%}`, "tag", false, true},
 	}
 	for i, test := range wsTests {
+		testV := test
 		t.Run(fmt.Sprintf("%02d", i), func(t *testing.T) {
-			tokens := scan(test.in)
+			tokens := scan(testV.in)
 			require.Len(t, tokens, 1)
 			tok := tokens[0]
-			if test.expect == "tag" {
-				require.Equalf(t, "tag", tok.Name, test.in)
-				require.Equalf(t, "arg", tok.Args, test.in)
+			if testV.expect == "tag" {
+				require.Equalf(t, "tag", tok.Name, testV.in)
+				require.Equalf(t, "arg", tok.Args, testV.in)
 			} else {
-				require.Equalf(t, "expr", tok.Args, test.in)
+				require.Equalf(t, "expr", tok.Args, testV.in)
 			}
-			require.Equalf(t, test.left, tok.TrimLeft, test.in)
-			require.Equalf(t, test.right, tok.TrimRight, test.in)
+			require.Equalf(t, testV.left, tok.TrimLeft, testV.in)
+			require.Equalf(t, testV.right, tok.TrimRight, testV.in)
 		})
 	}
 }
@@ -154,9 +156,10 @@ func TestScan_delims(t *testing.T) {
 	require.Equal(t, `[TextTokenType{"pre"} TagTokenType{Tag:"tag", Args:"args"} TextTokenType{"mid"} ObjTokenType{"object"} TextTokenType{"post"}]`, fmt.Sprint(tokens))
 
 	for i, test := range scannerCountTestsDelims {
+		testV := test
 		t.Run(fmt.Sprintf("%02d", i), func(t *testing.T) {
-			tokens := scan(test.in)
-			require.Len(t, tokens, test.len)
+			tokens := scan(testV.in)
+			require.Len(t, tokens, testV.len)
 		})
 	}
 }

@@ -41,9 +41,10 @@ var eqTests = []struct {
 
 func TestEqual(t *testing.T) {
 	for i, test := range eqTests {
+		testV := test
 		t.Run(fmt.Sprintf("%02d", i+1), func(t *testing.T) {
-			value := Equal(test.a, test.b)
-			require.Equalf(t, test.expected, value, "%#v == %#v", test.a, test.b)
+			value := Equal(testV.a, testV.b)
+			require.Equalf(t, testV.expected, value, "%#v == %#v", testV.a, testV.b)
 		})
 	}
 }
