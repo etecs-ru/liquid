@@ -1,5 +1,11 @@
 # Liquid Template Parser
 
+This is a fork of https://github.com/osteele/liquid with the latest changes from:
+  - https://github.com/arvata-io/liquid
+  - https://github.com/autopilot3/liquid
+
+Also, Go modules integration provided.
+
  [![][coveralls-svg]][coveralls-url]
  [![][go-report-card-svg]][go-report-card-url]
  [![][godoc-svg]][godoc-url]
