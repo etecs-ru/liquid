@@ -73,13 +73,14 @@ func TestControlFlowTags(t *testing.T) {
 	cfg := render.NewConfig()
 	AddStandardTags(cfg)
 	for i, test := range cfTagTests {
+		testV := test
 		t.Run(fmt.Sprintf("%02d", i+1), func(t *testing.T) {
-			root, err := cfg.Compile(test.in, parser.SourceLoc{})
-			require.NoErrorf(t, err, test.in)
+			root, err := cfg.Compile(testV.in, parser.SourceLoc{})
+			require.NoErrorf(t, err, testV.in)
 			buf := new(bytes.Buffer)
 			err = render.Render(root, buf, tagTestBindings, cfg)
-			require.NoErrorf(t, err, test.in)
-			require.Equalf(t, test.expected, buf.String(), test.in)
+			require.NoErrorf(t, err, testV.in)
+			require.Equalf(t, testV.expected, buf.String(), testV.in)
 		})
 	}
 }
@@ -94,19 +95,21 @@ func TestControlFlowTags_errors(t *testing.T) {
 	})
 
 	for i, test := range cfTagCompilationErrorTests {
+		testV := test
 		t.Run(fmt.Sprintf("%02d", i+1), func(t *testing.T) {
-			_, err := cfg.Compile(test.in, parser.SourceLoc{})
-			require.Errorf(t, err, test.in)
-			require.Contains(t, err.Error(), test.expected, test.in)
+			_, err := cfg.Compile(testV.in, parser.SourceLoc{})
+			require.Errorf(t, err, testV.in)
+			require.Contains(t, err.Error(), testV.expected, testV.in)
 		})
 	}
 	for i, test := range cfTagErrorTests {
+		testV := test
 		t.Run(fmt.Sprintf("%02d", i+1), func(t *testing.T) {
-			root, err := cfg.Compile(test.in, parser.SourceLoc{})
-			require.NoErrorf(t, err, test.in)
+			root, err := cfg.Compile(testV.in, parser.SourceLoc{})
+			require.NoErrorf(t, err, testV.in)
 			err = render.Render(root, ioutil.Discard, tagTestBindings, cfg)
-			require.Errorf(t, err, test.in)
-			require.Contains(t, err.Error(), test.expected, test.in)
+			require.Errorf(t, err, testV.in)
+			require.Contains(t, err.Error(), testV.expected, testV.in)
 		})
 	}
 }

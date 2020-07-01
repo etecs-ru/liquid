@@ -32,10 +32,11 @@ func TestCompile_errors(t *testing.T) {
 	settings := NewConfig()
 	addCompilerTestTags(settings)
 	for i, test := range compilerErrorTests {
+		testV := test
 		t.Run(fmt.Sprintf("%02d", i+1), func(t *testing.T) {
-			_, err := settings.Compile(test.in, parser.SourceLoc{})
-			require.Errorf(t, err, test.in)
-			require.Containsf(t, err.Error(), test.expected, test.in)
+			_, err := settings.Compile(testV.in, parser.SourceLoc{})
+			require.Errorf(t, err, testV.in)
+			require.Containsf(t, err.Error(), testV.expected, testV.in)
 		})
 	}
 }

@@ -2,7 +2,7 @@ name: Bump version
 on:
   push:
     branches:
-      - master
+      - noop-turn-off
 jobs:
   build:
     runs-on: ubuntu-latest

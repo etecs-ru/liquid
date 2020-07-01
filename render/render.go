@@ -4,6 +4,7 @@ package render
 import (
 	"fmt"
 	"io"
+	"io/ioutil"
 	"reflect"
 	"time"
 
@@ -25,6 +26,15 @@ func RenderWithState(node Node, w io.Writer, vars, state map[string]interface{},
 		panic(err)
 	}
 	return nil
+}
+
+func FindVariables(node Node, c Config) (map[string]interface{}, Error) {
+	tw := trimWriter{w: ioutil.Discard}
+	ctx := newFindVariablesNodeContext(c)
+	if err := node.render(&tw, ctx); err != nil {
+		return nil, err
+	}
+	return ctx.bindings, nil
 }
 
 // RenderASTSequence renders a sequence of nodes.

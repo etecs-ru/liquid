@@ -85,13 +85,14 @@ func TestContext(t *testing.T) {
 	cfg := NewConfig()
 	addContextTestTags(cfg)
 	for i, test := range contextTests {
+		testV := test
 		t.Run(fmt.Sprintf("%02d", i+1), func(t *testing.T) {
-			root, err := cfg.Compile(test.in, parser.SourceLoc{})
-			require.NoErrorf(t, err, test.in)
+			root, err := cfg.Compile(testV.in, parser.SourceLoc{})
+			require.NoErrorf(t, err, testV.in)
 			buf := new(bytes.Buffer)
 			err = Render(root, buf, contextTestBindings, cfg)
-			require.NoErrorf(t, err, test.in)
-			require.Equalf(t, test.out, buf.String(), test.in)
+			require.NoErrorf(t, err, testV.in)
+			require.Equalf(t, testV.out, buf.String(), testV.in)
 		})
 	}
 }
@@ -100,12 +101,13 @@ func TestContext_errors(t *testing.T) {
 	cfg := NewConfig()
 	addContextTestTags(cfg)
 	for i, test := range contextErrorTests {
+		testV := test
 		t.Run(fmt.Sprintf("%02d", i+1), func(t *testing.T) {
-			root, err := cfg.Compile(test.in, parser.SourceLoc{})
-			require.NoErrorf(t, err, test.in)
+			root, err := cfg.Compile(testV.in, parser.SourceLoc{})
+			require.NoErrorf(t, err, testV.in)
 			err = Render(root, ioutil.Discard, contextTestBindings, cfg)
-			require.Errorf(t, err, test.in)
-			require.Containsf(t, err.Error(), test.expect, test.in)
+			require.Errorf(t, err, testV.in)
+			require.Containsf(t, err.Error(), testV.expect, testV.in)
 		})
 	}
 }

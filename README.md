@@ -1,7 +1,5 @@
 # Liquid Template Parser
 
- [![][travis-svg]][travis-url]
- [![][appveyor-svg]][appveyor-url]
  [![][coveralls-svg]][coveralls-url]
  [![][go-report-card-svg]][go-report-card-url]
  [![][godoc-svg]][godoc-url]

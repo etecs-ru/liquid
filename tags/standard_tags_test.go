@@ -76,11 +76,12 @@ func TestStandardTags_parse_errors(t *testing.T) {
 	settings := render.NewConfig()
 	AddStandardTags(settings)
 	for i, test := range parseErrorTests {
+		testV := test
 		t.Run(fmt.Sprintf("%02d", i+1), func(t *testing.T) {
-			root, err := settings.Compile(test.in, parser.SourceLoc{})
-			require.Nilf(t, root, test.in)
-			require.Errorf(t, err, test.in)
-			require.Containsf(t, err.Error(), test.expected, test.in)
+			root, err := settings.Compile(testV.in, parser.SourceLoc{})
+			require.Nilf(t, root, testV.in)
+			require.Errorf(t, err, testV.in)
+			require.Containsf(t, err.Error(), testV.expected, testV.in)
 		})
 	}
 }
@@ -89,13 +90,14 @@ func TestStandardTags(t *testing.T) {
 	config := render.NewConfig()
 	AddStandardTags(config)
 	for i, test := range tagTests {
+		testV := test
 		t.Run(fmt.Sprintf("%02d", i+1), func(t *testing.T) {
-			root, err := config.Compile(test.in, parser.SourceLoc{})
-			require.NoErrorf(t, err, test.in)
+			root, err := config.Compile(testV.in, parser.SourceLoc{})
+			require.NoErrorf(t, err, testV.in)
 			buf := new(bytes.Buffer)
 			err = render.Render(root, buf, tagTestBindings, config)
-			require.NoErrorf(t, err, test.in)
-			require.Equalf(t, test.expected, buf.String(), test.in)
+			require.NoErrorf(t, err, testV.in)
+			require.Equalf(t, testV.expected, buf.String(), testV.in)
 		})
 	}
 }
@@ -104,12 +106,13 @@ func TestStandardTags_render_errors(t *testing.T) {
 	config := render.NewConfig()
 	AddStandardTags(config)
 	for i, test := range tagErrorTests {
+		testV := test
 		t.Run(fmt.Sprintf("%02d", i+1), func(t *testing.T) {
-			root, err := config.Compile(test.in, parser.SourceLoc{})
-			require.NoErrorf(t, err, test.in)
+			root, err := config.Compile(testV.in, parser.SourceLoc{})
+			require.NoErrorf(t, err, testV.in)
 			err = render.Render(root, ioutil.Discard, tagTestBindings, config)
-			require.Errorf(t, err, test.in)
-			require.Containsf(t, err.Error(), test.expected, test.in)
+			require.Errorf(t, err, testV.in)
+			require.Containsf(t, err.Error(), testV.expected, testV.in)
 		})
 	}
 }

@@ -287,10 +287,11 @@ func TestFilters(t *testing.T) {
 	context := expressions.NewContext(filterTestBindings, cfg)
 
 	for i, test := range filterTests {
+		testV := test
 		t.Run(fmt.Sprintf("%02d", i+1), func(t *testing.T) {
-			actual, err := expressions.EvaluateString(test.in, context)
-			require.NoErrorf(t, err, test.in)
-			require.Equalf(t, test.expected, actual, test.in)
+			actual, err := expressions.EvaluateString(testV.in, context)
+			require.NoErrorf(t, err, testV.in)
+			require.Equalf(t, testV.expected, actual, testV.in)
 		})
 	}
 }

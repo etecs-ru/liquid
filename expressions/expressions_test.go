@@ -123,10 +123,11 @@ func TestEvaluateString(t *testing.T) {
 	cfg.AddFilter("length", strings.Count)
 	ctx := NewContext(evaluatorTestBindings, cfg)
 	for i, test := range evaluatorTests {
+		testV := test
 		t.Run(fmt.Sprintf("%02d", i), func(t *testing.T) {
-			val, err := EvaluateString(test.in, ctx)
-			require.NoErrorf(t, err, test.in)
-			require.Equalf(t, test.expected, val, test.in)
+			val, err := EvaluateString(testV.in, ctx)
+			require.NoErrorf(t, err, testV.in)
+			require.Equalf(t, testV.expected, val, testV.in)
 		})
 	}
 

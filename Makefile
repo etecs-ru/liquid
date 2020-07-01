@@ -26,7 +26,6 @@ imports: ## list imports
 
 lint: ## lint the package
 	golangci-lint run ./...
-	#		--disable=gotype --disable=interfacer
 	@echo lint passed
 
 pre-commit: lint test ## lint and test the package

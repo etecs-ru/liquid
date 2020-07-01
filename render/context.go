@@ -106,7 +106,7 @@ func (c rendererContext) GetState(key string, defaulter func() interface{}) inte
 }
 
 func (c rendererContext) sourceLoc() parser.SourceLoc {
-	if c.cn != nil {
+	if c.cn != nil { // nolint: gocritic
 		return c.cn.SourceLoc
 	} else if c.node != nil {
 		return c.node.SourceLoc

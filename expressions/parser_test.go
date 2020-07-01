@@ -43,24 +43,26 @@ func TestParse(t *testing.T) {
 		"obj": map[string]int{"prop": 2},
 	}, cfg)
 	for i, test := range parseTests {
+		testV := test
 		t.Run(fmt.Sprintf("%02d", i+1), func(t *testing.T) {
-			expr, err := Parse(test.in)
-			require.NoError(t, err, test.in)
+			expr, err := Parse(testV.in)
+			require.NoError(t, err, testV.in)
 			_ = expr
 			value, err := expr.Evaluate(ctx)
-			require.NoError(t, err, test.in)
-			require.Equal(t, test.expect, value, test.in)
+			require.NoError(t, err, testV.in)
+			require.Equal(t, testV.expect, value, testV.in)
 		})
 	}
 }
 
 func TestParse_errors(t *testing.T) {
 	for i, test := range parseErrorTests {
+		testV := test
 		t.Run(fmt.Sprintf("%02d", i+1), func(t *testing.T) {
-			expr, err := Parse(test.in)
-			require.Nilf(t, expr, test.in)
-			require.Errorf(t, err, test.in, test.in)
-			require.Containsf(t, err.Error(), test.expected, test.in)
+			expr, err := Parse(testV.in)
+			require.Nilf(t, expr, testV.in)
+			require.Errorf(t, err, testV.in, testV.in)
+			require.Containsf(t, err.Error(), testV.expected, testV.in)
 		})
 	}
 }
