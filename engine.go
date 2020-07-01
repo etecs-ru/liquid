@@ -3,10 +3,10 @@ package liquid
 import (
 	"io"
 
-	"github.com/osteele/liquid/expressions"
-	"github.com/osteele/liquid/filters"
-	"github.com/osteele/liquid/render"
-	"github.com/osteele/liquid/tags"
+	"github.com/etecs-ru/liquid/expressions"
+	"github.com/etecs-ru/liquid/filters"
+	"github.com/etecs-ru/liquid/render"
+	"github.com/etecs-ru/liquid/tags"
 )
 
 // An Engine parses template source into renderable text.
@@ -41,7 +41,7 @@ func (e *Engine) RegisterBlock(name string, td Renderer) {
 //
 // Examples:
 //
-// * https://github.com/osteele/liquid/blob/master/filters/filters.go
+// * https://github.com/etecs-ru/liquid/blob/master/filters/filters.go
 //
 // * https://github.com/osteele/gojekyll/blob/master/filters/filters.go
 //

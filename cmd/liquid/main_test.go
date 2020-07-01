@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestMain(t *testing.T) {
+func TestMainFunc(t *testing.T) {
 	exit = func(n int) { t.Fatalf("exit called") }
 
 	// stdin

@@ -16,7 +16,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/osteele/liquid"
+	"github.com/etecs-ru/liquid"
 )
 
 // for testing
