@@ -21,8 +21,5 @@ jobs:
           # specified without patch version: we always use the latest patch version.
           version: v1.27
 
-          # Optional: golangci-lint command line arguments.
-           args: --skip-files="y.go" --skip-files=".*_string.go" --skip-files="expressions/scanner.go"
-
           # Optional: show only new issues if it's a pull request. The default value is `false`.
-          # only-new-issues: true
+          only-new-issues: true

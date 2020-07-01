@@ -10,7 +10,7 @@ import (
 // have a clean name that doesn't stutter.
 type nodeContext struct {
 	bindings          map[string]interface{}
-	state    map[string]interface{}
+	state             map[string]interface{}
 	config            Config
 	findVariablesOnly bool
 }
@@ -23,10 +23,10 @@ func newNodeContext(scope map[string]interface{}, state map[string]interface{}, 
 	for k, v := range scope {
 		vars[k] = v
 	}
-	return nodeContext{vars, state, c}
 	return nodeContext{
 		bindings: vars,
 		config:   c,
+		state:    state,
 	}
 }
 

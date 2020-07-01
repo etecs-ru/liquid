@@ -1,6 +1,10 @@
 package expressions
 
-import "github.com/etecs-ru/liquid/values"
+import (
+	"reflect"
+
+	"github.com/etecs-ru/liquid/values"
+)
 
 // Context is the expression evaluation context. It maps variables names to values.
 type Context interface {
