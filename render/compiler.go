@@ -3,7 +3,7 @@ package render
 import (
 	"fmt"
 
-	"github.com/etecs-ru/liquid/parser"
+	"github.com/etecs-ru/liquid/v2/parser"
 )
 
 // Compile parses a source template. It returns an AST root, that can be evaluated.

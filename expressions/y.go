@@ -6,7 +6,7 @@ import __yyfmt__ "fmt"
 //line expressions.y:2
 import (
 	"fmt"
-	"github.com/etecs-ru/liquid/values"
+	"github.com/etecs-ru/liquid/v2/values"
 	"math"
 )
 

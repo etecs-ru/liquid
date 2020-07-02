@@ -10,9 +10,9 @@ import (
 
 	yaml "gopkg.in/yaml.v2"
 
-	"github.com/etecs-ru/liquid/expressions"
-	"github.com/etecs-ru/liquid/parser"
-	"github.com/etecs-ru/liquid/render"
+	"github.com/etecs-ru/liquid/v2/expressions"
+	"github.com/etecs-ru/liquid/v2/parser"
+	"github.com/etecs-ru/liquid/v2/render"
 	"github.com/stretchr/testify/require"
 )
 

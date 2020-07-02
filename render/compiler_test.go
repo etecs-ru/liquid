@@ -5,7 +5,7 @@ import (
 	"io"
 	"testing"
 
-	"github.com/etecs-ru/liquid/parser"
+	"github.com/etecs-ru/liquid/v2/parser"
 	"github.com/stretchr/testify/require"
 )
 

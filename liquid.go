@@ -1,7 +1,7 @@
 /*
 Package liquid is a pure Go implementation of Shopify Liquid templates, developed for use in https://github.com/osteele/gojekyll.
 
-See the project README https://github.com/etecs-ru/liquid for additional information and implementation status.
+See the project README https://github.com/etecs-ru/liquid/v2 for additional information and implementation status.
 
 
 The liquid package itself is versioned in gopkg.in. Subpackages have no compatibility guarantees. Except where specifically documented, the “public” entities of subpackages are intended only for use by the liquid package and its subpackages.
@@ -9,8 +9,8 @@ The liquid package itself is versioned in gopkg.in. Subpackages have no compatib
 package liquid
 
 import (
-	"github.com/etecs-ru/liquid/render"
-	"github.com/etecs-ru/liquid/tags"
+	"github.com/etecs-ru/liquid/v2/render"
+	"github.com/etecs-ru/liquid/v2/tags"
 )
 
 // Bindings is a map of variable names to values.

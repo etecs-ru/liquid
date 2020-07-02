@@ -3,8 +3,8 @@ package render
 import (
 	"io"
 
-	"github.com/etecs-ru/liquid/expressions"
-	"github.com/etecs-ru/liquid/parser"
+	"github.com/etecs-ru/liquid/v2/expressions"
+	"github.com/etecs-ru/liquid/v2/parser"
 )
 
 // Node is a node of the render tree.

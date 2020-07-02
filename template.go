@@ -3,8 +3,8 @@ package liquid
 import (
 	"bytes"
 
-	"github.com/etecs-ru/liquid/parser"
-	"github.com/etecs-ru/liquid/render"
+	"github.com/etecs-ru/liquid/v2/parser"
+	"github.com/etecs-ru/liquid/v2/render"
 )
 
 // A Template is a compiled Liquid template. It knows how to evaluate itself within a variable binding environment, to create a rendered byte slice.
