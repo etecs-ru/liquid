@@ -7,7 +7,7 @@ package expressions
 import (
 	"fmt"
 
-	"github.com/etecs-ru/liquid/values"
+	"github.com/etecs-ru/liquid/v2/values"
 )
 
 type parseValue struct {

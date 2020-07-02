@@ -6,7 +6,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/etecs-ru/liquid/values"
+	"github.com/etecs-ru/liquid/v2/values"
 )
 
 func sortFilter(array []interface{}, key interface{}) []interface{} {

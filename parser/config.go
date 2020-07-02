@@ -1,6 +1,6 @@
 package parser
 
-import "github.com/etecs-ru/liquid/expressions"
+import "github.com/etecs-ru/liquid/v2/expressions"
 
 // A Config holds configuration information for parsing and rendering.
 type Config struct {

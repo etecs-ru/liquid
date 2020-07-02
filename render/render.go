@@ -8,7 +8,7 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/etecs-ru/liquid/values"
+	"github.com/etecs-ru/liquid/v2/values"
 )
 
 // Render renders the render tree.

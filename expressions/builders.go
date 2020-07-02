@@ -1,7 +1,7 @@
 package expressions
 
 import (
-	"github.com/etecs-ru/liquid/values"
+	"github.com/etecs-ru/liquid/v2/values"
 )
 
 func makeRangeExpr(startFn, endFn func(Context) values.Value) func(Context) values.Value {

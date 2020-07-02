@@ -1,7 +1,7 @@
 package render
 
 import (
-	"github.com/etecs-ru/liquid/expressions"
+	"github.com/etecs-ru/liquid/v2/expressions"
 )
 
 // nodeContext provides the evaluation context for rendering the AST.
