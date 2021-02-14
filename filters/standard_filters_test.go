@@ -43,8 +43,8 @@ var filterTests = []struct {
 	{`fruits | last`, "plums"},
 	{`empty_array | first`, nil},
 	{`empty_array | last`, nil},
-	//{`empty_array | uniq: 'a'`, []interface{}(nil)}, // TODO uniq with property is not supported
-	//{`empty_array | compact: 'a'`, []interface{}(nil)}, // TODO compact with property is not supported
+	// {`empty_array | uniq: 'a'`, []interface{}(nil)}, // TODO uniq with property is not supported
+	// {`empty_array | compact: 'a'`, []interface{}(nil)}, // TODO compact with property is not supported
 	{`empty_array | sort: 'a'`, []interface{}{}},
 	{`dup_ints | uniq | join`, "1 2 3"},
 	{`dup_strings | uniq | join`, "one two three"},
@@ -187,8 +187,8 @@ var filterTests = []struct {
 	{`3 | modulo: 2`, int64(1)},
 	{`24 | modulo: 7`, int64(3)},
 	{`"24" | modulo: 7`, int64(3)},
-	//{`183.357 | modulo: 12`, 3.357}, // TODO test suite use inexact
-	//{`"183.357" | modulo: 12`, 3.357}, // TODO test suite use inexact
+	// {`183.357 | modulo: 12`, 3.357}, // TODO test suite use inexact
+	// {`"183.357" | modulo: 12`, 3.357}, // TODO test suite use inexact
 
 	{`16 | divided_by: 4`, int64(4)},
 	{`5 | divided_by: 3`, int64(1)},
@@ -197,7 +197,7 @@ var filterTests = []struct {
 	{`20 | divided_by: 7.0`, 2.857142857142857},
 	{`"20" | divided_by: 7.0`, 2.857142857142857},
 	{`"20" | divided_by: 0.0`, math.Inf(1)},
-	//{`20 | divided_by: 's'`, nil}, // TODO test for error
+	// {`20 | divided_by: 's'`, nil}, // TODO test for error
 
 	{`1.2 | round`, int64(1)},
 	{`2.7 | round`, int64(3)},
