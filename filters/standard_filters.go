@@ -162,23 +162,19 @@ func AddStandardFilters(fd FilterDictionary) { // nolint: gocyclo
 		return html.EscapeString(html.UnescapeString(s))
 	})
 	fd.AddFilter("newline_to_br", func(s string) string {
-		return strings.Replace(s, "\n", "<br />", -1)
+		return strings.ReplaceAll(s, "\n", "<br />")
 	})
 	fd.AddFilter("prepend", func(s, prefix string) string {
 		return prefix + s
 	})
 	fd.AddFilter("remove", func(s, old string) string {
-		return strings.Replace(s, old, "", -1)
+		return strings.ReplaceAll(s, old, "")
 	})
 	fd.AddFilter("remove_first", func(s, old string) string {
 		return strings.Replace(s, old, "", 1)
 	})
-	fd.AddFilter("replace", func(s, old, new string) string {
-		return strings.Replace(s, old, new, -1)
-	})
-	fd.AddFilter("replace_first", func(s, old, new string) string {
-		return strings.Replace(s, old, new, 1)
-	})
+	fd.AddFilter("replace", strings.ReplaceAll)
+	fd.AddFilter("replace_first", strings.ReplaceAll)
 	fd.AddFilter("sort_natural", sortNaturalFilter)
 	fd.AddFilter("slice", func(s string, start int, length func(int) int) string {
 		// runes aren't bytes; don't use slice
@@ -195,7 +191,7 @@ func AddStandardFilters(fd FilterDictionary) { // nolint: gocyclo
 		return regexp.MustCompile(`<.*?>`).ReplaceAllString(s, "")
 	})
 	fd.AddFilter("strip_newlines", func(s string) string {
-		return strings.Replace(s, "\n", "", -1)
+		return strings.ReplaceAll(s, "\n", "")
 	})
 	fd.AddFilter("strip", strings.TrimSpace)
 	fd.AddFilter("lstrip", func(s string) string {
@@ -361,7 +357,7 @@ func atLeast(num, comp values.Number) interface{} {
 		return math.Inf(1)
 	case math.IsNaN(fNum) || math.IsNaN(fComp):
 		return math.NaN()
-	case fNum == 0 && fNum == fComp:
+	case fNum == 0 && fComp == 0:
 		if math.Signbit(fNum) {
 			return comp.Value
 		}
@@ -394,7 +390,7 @@ func atMost(num, comp values.Number) interface{} {
 		return math.Inf(-1)
 	case math.IsNaN(fNum) || math.IsNaN(fComp):
 		return math.NaN()
-	case fNum == 0 && fNum == fComp:
+	case fNum == 0 && fComp == 0:
 		if math.Signbit(fNum) {
 			return num.Value
 		}

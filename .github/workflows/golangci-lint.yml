@@ -5,11 +5,9 @@ on:
       - v*
     branches:
       - master
-      - v2
   pull_request:
     branches:
       - master
-      - v2
 jobs:
   golangci:
     name: lint

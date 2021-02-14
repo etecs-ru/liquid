@@ -52,8 +52,10 @@ func (c *Config) AddFilter(name string, fn interface{}) {
 	c.filters[name] = fn
 }
 
-var closureType = reflect.TypeOf(closure{})
-var interfaceType = reflect.TypeOf([]interface{}{}).Elem()
+var (
+	closureType   = reflect.TypeOf(closure{})
+	interfaceType = reflect.TypeOf([]interface{}{}).Elem()
+)
 
 func isClosureInterfaceType(t reflect.Type) bool {
 	return closureType.ConvertibleTo(t) && !interfaceType.ConvertibleTo(t)
