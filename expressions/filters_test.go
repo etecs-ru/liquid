@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/etecs-ru/liquid/values"
+	"github.com/etecs-ru/liquid/v2/values"
 	"github.com/stretchr/testify/require"
 )
 

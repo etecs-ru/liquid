@@ -3,7 +3,7 @@ package expressions
 import (
 	"fmt"
 	"math"
-	"github.com/etecs-ru/liquid/values"
+	"github.com/etecs-ru/liquid/v2/values"
 )
 
 func init() {

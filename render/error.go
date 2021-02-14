@@ -1,7 +1,7 @@
 package render
 
 import (
-	"github.com/etecs-ru/liquid/parser"
+	"github.com/etecs-ru/liquid/v2/parser"
 )
 
 // An Error is an error during template rendering.

@@ -5,8 +5,8 @@ import (
 	"io"
 	"strings"
 
-	"github.com/etecs-ru/liquid/expressions"
-	"github.com/etecs-ru/liquid/render"
+	"github.com/etecs-ru/liquid/v2/expressions"
+	"github.com/etecs-ru/liquid/v2/render"
 )
 
 // AddStandardTags defines the standard Liquid tags.

@@ -3,9 +3,9 @@ package tags
 import (
 	"io"
 
-	e "github.com/etecs-ru/liquid/expressions"
-	"github.com/etecs-ru/liquid/render"
-	"github.com/etecs-ru/liquid/values"
+	e "github.com/etecs-ru/liquid/v2/expressions"
+	"github.com/etecs-ru/liquid/v2/render"
+	"github.com/etecs-ru/liquid/v2/values"
 )
 
 type caseInterpreter interface {

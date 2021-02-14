@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/etecs-ru/liquid/expressions"
+	"github.com/etecs-ru/liquid/v2/expressions"
 )
 
 // Parse parses a source template. It returns an AST root, that can be compiled and evaluated.

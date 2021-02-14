@@ -1,7 +1,7 @@
 package render
 
 import (
-	"github.com/etecs-ru/liquid/parser"
+	"github.com/etecs-ru/liquid/v2/parser"
 )
 
 // Config holds configuration information for parsing and rendering.

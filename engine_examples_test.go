@@ -5,7 +5,7 @@ import (
 	"log"
 	"strings"
 
-	"github.com/etecs-ru/liquid/render"
+	"github.com/etecs-ru/liquid/v2/render"
 )
 
 func Example() {
