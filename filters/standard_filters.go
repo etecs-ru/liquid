@@ -174,7 +174,9 @@ func AddStandardFilters(fd FilterDictionary) { // nolint: gocyclo
 		return strings.Replace(s, old, "", 1)
 	})
 	fd.AddFilter("replace", strings.ReplaceAll)
-	fd.AddFilter("replace_first", strings.ReplaceAll)
+	fd.AddFilter("replace_first", func(s, old, new string) string {
+		return strings.Replace(s, old, new, 1)
+	})
 	fd.AddFilter("sort_natural", sortNaturalFilter)
 	fd.AddFilter("slice", func(s string, start int, length func(int) int) string {
 		// runes aren't bytes; don't use slice
