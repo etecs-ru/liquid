@@ -17,6 +17,13 @@ func TestValue_Interface(t *testing.T) {
 	require.Equal(t, 123, iv.Interface())
 }
 
+func TestValueNilPointer(t *testing.T) {
+	nv := ValueOf(func() *int {
+		return nil
+	}())
+	require.Nil(t, nv.Interface())
+}
+
 func TestValue_Equal(t *testing.T) {
 	iv := ValueOf(123)
 	require.True(t, iv.Equal(ValueOf(123)))
